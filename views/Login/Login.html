@@ -1,0 +1,47 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <link rel="stylesheet" href="./Login.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="box">
+        <div>
+          <div>
+            <input type="text" placeholder="아이디" />
+          </div>
+          <div>
+            <input type="password" placeholder="비밀번호" />
+          </div>
+        </div>
+        <button id="loginBtn" class="btn-login">로그인</button>
+        <div class="box-signUp">
+          <span class="btn-signUp" id="goToSignUp">회원가입 ></span>
+        </div>
+      </div>  
+    </div>
+
+    <py-script>
+      from js import document, location 
+      from pyodide import ffi
+
+      # 로그인 버튼 클릭 시 호출되는 함수 
+      def doLogin(args):
+        print('Do Login ...')
+
+      # 회원가입 버튼 클릭 시 호출되는 함수 
+      def goToSignUp(args): 
+        location.href = '/views/SignUp/SignUp.html';
+
+      # 로그인 버튼에 doLogin 함수를 연결해주는 작업
+      doLoginProxy = ffi.create_proxy(doLogin)
+      document.getElementById('loginBtn').addEventListener('click', doLoginProxy)
+
+      # 회원가입 버튼에 goToSignUp 함수를 연결해주는 작업 
+      doGoToSignUpProxy = ffi.create_proxy(goToSignUp)
+      document.getElementById('goToSignUp').addEventListener('click', doGoToSignUpProxy)
+    </py-script>
+  </body>
+</html>
