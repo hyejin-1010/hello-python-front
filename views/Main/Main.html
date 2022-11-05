@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <link rel="stylesheet" href="./Main.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
+  </head>
+  <body>
+    <header>
+      <object type="text/html" data="../../components/Navbar/Navbar.html" class="navbar"></object>  
+    </header>
+
+    <div class="main">
+      <div class="box">
+        <div class="box-circles" id="box-circles">
+        </div>
+      </div>
+    </div>
+
+    <py-script>
+      from js import document
+
+      for i in range(5) :
+        lectureDiv = document.createElement('div')
+        if i == 4 :
+          lectureDiv.className = 'circle circle-odd circle-dice'
+        elif i % 2 == 0 :
+          lectureDiv.className = 'circle circle-odd'
+        else :
+          lectureDiv.className = 'circle circle-even'
+
+        lectureSpan = document.createElement('span')
+        if i == 4 :
+          lectureSpan.appendChild(document.createTextNode('.'))
+        else :
+          lectureSpan.appendChild(document.createTextNode(i + 1))
+
+        lectureDiv.appendChild(lectureSpan)
+        document.getElementById('box-circles').append(lectureDiv)
+    </py-script>
+  </body>
+</html>
