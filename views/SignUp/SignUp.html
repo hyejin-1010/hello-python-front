@@ -1,7 +1,7 @@
 <html>
   <head>
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <link rel="stylesheet" href="./Login.css" />
+    <link rel="stylesheet" href="./SignUp.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
   </head>
@@ -9,27 +9,45 @@
     <div class="wrap">
       <div class="box">
         <form>
+          <!-- UID -->
+          <div class="box-input box-input-id">
+            <input type="text" id="inputUid" placeholder="아이디" />
+            <button class="btn-check-id" id="checkIdBtn">중복확인</button>
+          </div>
 
+          <!-- PASSWORD -->
+          <div class="box-input">
+            <input type="password" id="inputPassword" placeholder="비밀번호" />
+          </div>
+
+          <!-- PASSWORD CONFIRM -->
+          <div class="box-input">
+            <input type="password" id="inputPasswordConfirm" placeholder="비밀번호 확인" />
+          </div>
+
+          <!-- NICKNAME -->
+          <div class="box-input">
+            <input type="text" id="inputNickname" placeholder="닉네임" />
+          </div>
+
+          <button class="btn-signUp" id="btnSignUp">회원가입</button> 
         </form>
-        <!--
-        <div>
-          <div>
-            <input type="text" placeholder="아이디" />
-          </div>
-          <div>
-            <input type="password" placeholder="비밀번호" />
-          </div>
-        </div>
-        <button id="loginBtn" class="btn-login">로그인</button>
-        <div class="box-signUp">
-          <span class="btn-signUp">회원가입 ></span>
-        </div>
-        -->
       </div>  
     </div>
 
     <py-script>
-      print('SignUp View') 
+      from js import document, location 
+      from pyodide import ffi
+
+      # print('SignUp View') 
+
+      # 아이디 중복 체크 버튼 클릭 시 호출되는 함수
+      def checkId(args):
+        print('check id')
+      
+      # 아이디 중복 체크 버튼에 checkId 함수를 연결해주는 작업
+      checkIdProxy = ffi.create_proxy(checkId)
+      document.getElementById('checkIdBtn')
     </py-script>
   </body>
 </html>
