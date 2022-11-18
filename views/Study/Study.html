@@ -14,7 +14,7 @@
       <div class="box">
         <div class="header">
           <div class="title">파이썬 소개와 설치 안내</div>
-          <button class="btn-next">다음</button>
+          <button class="btn-next" id="nextBtn">다음</button>
         </div>
         <video id="studyVideo" controls></video>
       </div>
@@ -22,6 +22,8 @@
 
     <py-script>
       from js import document, location 
+      from pyodide import ffi
+
       queries = location.href.split('?')[1]
       no = queries[len(queries) - 1]
       videoFilePath = '/videos/video_1_{}.mp4'.format(no)
@@ -34,6 +36,11 @@
       source.setAttribute('type', 'video/mp4')
 
       videoTag.appendChild(source)
+
+      def doNext (args) :
+        location.href = '/views/PointGame/PointGame.html?no={}'.format(no)
+      nextBtnProxy = ffi.create_proxy(doNext)
+      document.getElementById('nextBtn').addEventListener('click', nextBtnProxy)
     </py-script>
   </body>
 </html>
