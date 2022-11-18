@@ -18,25 +18,44 @@
     </div>
 
     <py-script>
-      from js import document
+      from js import document, location 
+      from pyodide import ffi
 
-      for i in range(5) :
+      def onClickCircle (args) :
+        for i in range(len(args.path)) :
+          if 'circle' in args.path[i].id :
+            circleNo = int(args.path[i].id[len(args.path[i].id) - 1])
+            console.log(circleNo)
+            location.href = '/views/Study/Study.html?no={}'.format(circleNo + 1)
+            break
+
+      for i in range(6) :
+        isDice = i == 5
+        circleId = 'circle_item_{}'.format(i)
         lectureDiv = document.createElement('div')
-        if i == 4 :
+
+        # circle 별 class 적용 (index의 짝홀수 여부에 따라 상단/하단 위치에 할 수 있도록 class 적용)
+        if isDice :
           lectureDiv.className = 'circle circle-odd circle-dice'
         elif i % 2 == 0 :
-          lectureDiv.className = 'circle circle-odd'
-        else :
           lectureDiv.className = 'circle circle-even'
+        else :
+          lectureDiv.className = 'circle circle-odd'
 
+        lectureDiv.setAttribute('id', circleId)
+        lectureDiv.setAttribute('index', i)
+
+        # circle 내 내부 텍스트 생성 
         lectureSpan = document.createElement('span')
-        if i == 4 :
+        if isDice :
           lectureSpan.appendChild(document.createTextNode('.'))
         else :
           lectureSpan.appendChild(document.createTextNode(i + 1))
 
         lectureDiv.appendChild(lectureSpan)
         document.getElementById('box-circles').append(lectureDiv)
+
+        lectureDiv.addEventListener('click', ffi.create_proxy(onClickCircle))
     </py-script>
   </body>
 </html>

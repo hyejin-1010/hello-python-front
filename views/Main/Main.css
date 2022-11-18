@@ -33,6 +33,7 @@ body {
 }
 
 .circle {
+  cursor: pointer;
   display: flex;
   width: 150px;
   height: 150px;
