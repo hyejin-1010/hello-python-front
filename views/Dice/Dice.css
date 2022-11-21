@@ -1,0 +1,222 @@
+body {
+  margin: 0;
+  background: #FBFCF4;
+}
+
+.navbar {
+  width: 100%;
+  height: 65px;
+}
+
+.main {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: calc(100% - 65px);
+}
+
+.box {
+  position: relative;
+  width: calc(100% - 40px);
+  padding: 20px 50px;
+}
+
+.dice-row {
+  display: flex;
+}
+
+.dice-box {
+  flex: 1;
+  height: 15vh;
+  background: white;
+  border: 1px solid gray;
+}
+
+.blank {
+  flex: 6;
+}
+
+.btnDice {
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  padding: 50px 0;
+  width: 200px;
+  height: 100px;
+  background: #339535;
+  border-radius: 100%;
+  color: #fff;
+  font-size: 40px;
+  text-align: center;
+  font-weight: bold;
+}
+
+img.user {
+  width: 50px;
+  height: 50px;
+}
+
+.dialog {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, .3);
+}
+
+.dialog-content {
+  margin: auto;
+  padding: 20px 15px;
+  width: 50%;
+  height: 50%;
+  background: #fff;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 15px;
+}
+
+.question-title {
+  color: #339535;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.question-content {
+  padding: 10px 15px;
+  background: rgb(223, 223, 223);
+  border-radius: 5px;
+  font-size: 24px;
+}
+
+.selection {
+  cursor: pointer;
+  margin: 15px 0;
+}
+
+.selection:hover .no {
+  background: #266e27;
+}
+
+.selection .no {
+  display: flex;
+  flex-direction: column;
+  margin-right: 15px;
+  width: 50px;
+  height: 50px;
+  background: #339535;
+  border-radius: 100%;
+}
+
+.selection .no div {
+  margin: auto;
+  color: #fff;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.selection .content {
+  flex: 1;
+  padding: 10px 0;
+  font-size: 22px;
+}
+
+.question-ox, .selection {
+  display: flex;
+}
+
+.o, .x {
+  flex: 1;
+  margin: 10px 20px;
+  padding: 25px 0;
+  border: 2px solid gray;
+  border-radius: 25px;
+  font-size: 50px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.o {
+  border-color: blue;
+  color: blue;
+}
+
+.o:hover {
+  background: blue;
+  color: white;
+}
+
+.x {
+  border-color: red;
+  color: red;
+}
+
+.x:hover {
+  background: red;
+  color: white;
+}
+
+.question-input {
+  display: flex;
+  padding: 5px 10px;
+}
+
+.question-input input {
+  flex: 1;
+  border-radius: 5px;
+}
+
+.btn-done {
+  margin-left: 15px;
+  padding: 5px 25px;
+  background: #339535;
+  border-radius: 15px;
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.question-input, .question-ox {
+  display: none;
+}
+
+/**
+주사위 굴리기
+**/
+#diceBox { max-width: 600px; width: 90vw; height: auto; background-color: #fff; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.3); padding: 40px; box-sizing: border-box; }
+#diceBox > .dice_wrap { width: 100%; height: auto; display: flex; margin-bottom: 20px;}
+#diceBox > .dice_wrap > [class^=dice]:last-of-type {margin-right: 0px;}
+/* 주사위 만들기 */
+#diceBox > .dice_wrap > [class^=dice] { width: 49%; margin-right: 2%; padding-top: 49%; position: relative; }
+.dice_inner { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; perspective: 300px; padding: 20%; box-sizing: border-box; }
+#diceBox > .dice_wrap > [class^=dice] .dice { width: 100%; height: 100%; transform-style: preserve-3d; transition: 1s; }
+#diceBox > .dice_wrap > [class^=dice] .dice > div { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; opacity: 0.8; color: #fff; font-size: 60px; }
+#diceBox > .dice_wrap > [class^=dice] .dice .face1 { transform: rotateY(0deg) translateZ(60px); background: red; }
+#diceBox > .dice_wrap > [class^=dice] .dice .face2 { transform: rotateY(90deg) translateZ(60px); background: blue; }
+#diceBox > .dice_wrap > [class^=dice] .dice .face3 { transform: rotateX(90deg) translateZ(60px); background: green; }
+#diceBox > .dice_wrap > [class^=dice] .dice .face4 { transform: rotateX(270deg) translateZ(60px); background: pink; }
+#diceBox > .dice_wrap > [class^=dice] .dice .face5 { transform: rotateY(270deg) translateZ(60px); background: royalblue; }
+#diceBox > .dice_wrap > [class^=dice] .dice .face6 { transform: rotateY(180deg) translateZ(60px); background: purple; }
+/* 주사위 눈 */
+#diceBox > .dice_wrap > [class^=dice] .dice.face1 { transform: rotateX(0deg) rotateY(0deg); }
+#diceBox > .dice_wrap > [class^=dice] .dice.face2 { transform: rotateX(0deg) rotateY(-90deg); }
+#diceBox > .dice_wrap > [class^=dice] .dice.face3 { transform: rotateX(-90deg) rotateY(0deg); }
+#diceBox > .dice_wrap > [class^=dice] .dice.face4 { transform: rotateX(-270deg) rotateY(0deg); }
+#diceBox > .dice_wrap > [class^=dice] .dice.face5 { transform: rotateX(0deg) rotateY(-270deg); }
+#diceBox > .dice_wrap > [class^=dice] .dice.face6 { transform: rotateX(0deg) rotateY(-180deg); }
+#btnRolling { display: block; width: 160px; height: 40px; margin: 0 auto; background-color: royalblue; border: none; border-radius: 4px; color: #fff; cursor: pointer; position: relative; overflow: hidden; }
+#btnRolling::before{ display: block; content: ''; width: 60px; height: 100%; background-color: #fff; position: absolute; top:0; left: -60px; transition: all 0.5s; transform: skewX(-45deg); transform-origin: top left; opacity: 0.3; }
+#btnRolling:hover::before { transform: skewX(-45deg) translateX(280px); }
+
+/* 반응형 */
+@media screen and (max-width : 429px){
+  #diceBox { box-shadow:none;}
+  #diceBox > .dice_wrap { display: block;}
+  #diceBox > .dice_wrap > [class^=dice] { width: 100%; margin-right: 0%; padding-top: 100%; }
+}
