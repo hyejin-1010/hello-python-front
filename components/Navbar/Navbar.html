@@ -7,12 +7,26 @@
   </head>
   <body>
     <div class="wrap">
-      <div class="logo">
+      <div class="logo" id="logo">
         <span>헬로파이썬</span>
       </div>
+
+      <div class="blank"></div>
+      <div class="btn"><span>랭킹 확인하기</span></div> 
+      <div class="btn"><span>마이페이지</span></div> 
     </div>
 
     <py-script>
+      '''
+      from js import document, location
+      from pyodide import ffi
+      
+      def onClickLogo (args) :
+        # location.href = '/views/Main/Main.html'
+
+      logo = document.getElementById('logo')
+      logo.addEventListener('click', ffi.create_proxy(onClickLogo))
+      '''
     </py-script>
   </body>
 </html>
