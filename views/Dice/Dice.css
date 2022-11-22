@@ -26,6 +26,10 @@ body {
 }
 
 .dice-box {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  justify-content: center;
   flex: 1;
   height: 15vh;
   background: white;
@@ -67,6 +71,7 @@ body {
 }
 
 img.user {
+  margin: auto;
   width: 50px;
   height: 50px;
 }
@@ -84,6 +89,10 @@ img.user {
 }
 
 .dialog-content {
+  display: none;
+}
+
+.dialog-content, .box-result {
   margin: auto;
   padding: 20px 15px;
   width: 50%;
@@ -91,6 +100,43 @@ img.user {
   background: #fff;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 15px;
+}
+
+.box-right, .box-wrong {
+  display: none;
+  margin-top: 15px;
+  text-align:center;
+  font-weight: bold;
+  font-size: 40px;
+}
+
+.box-right {
+  color: blue;
+}
+
+.box-wrong {
+  color: red;
+}
+
+.commentary {
+  padding: 5px 15px;
+  font-size: 26px;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.box-result-buttons {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.btn-done-result {
+  padding: 5px 25px;
+  background: #339535;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 24px;
+  color: #fff;
 }
 
 .question-title {
