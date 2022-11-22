@@ -230,6 +230,7 @@
           step = step + 1
           if step >= 3 :
             doneLectures = localStorage.getItem('doneLectures') or []
+            doneLectures = list(doneLectures)
             if not no in doneLectures :
               doneLectures.append(no)
             localStorage.setItem('doneLectures', doneLectures)
