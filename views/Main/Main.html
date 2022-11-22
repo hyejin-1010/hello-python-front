@@ -25,8 +25,10 @@
         for i in range(len(args.path)) :
           if 'circle' in args.path[i].id :
             circleNo = int(args.path[i].id[len(args.path[i].id) - 1])
-            console.log(circleNo)
-            location.href = '/views/Study/Study.html?no={}'.format(circleNo + 1)
+            if circleNo == 5 :
+              location.href = '/views/Dice/Dice.html'
+            else :
+              location.href = '/views/Study/Study.html?no={}'.format(circleNo + 1)
             break
 
       for i in range(6) :
@@ -48,7 +50,9 @@
         # circle 내 내부 텍스트 생성 
         lectureSpan = document.createElement('span')
         if isDice :
-          lectureSpan.appendChild(document.createTextNode('.'))
+          diceImg = document.createElement('img')
+          diceImg.src = '/images/dice.png'
+          lectureSpan.appendChild(diceImg)
         else :
           lectureSpan.appendChild(document.createTextNode(i + 1))
 

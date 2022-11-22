@@ -323,7 +323,6 @@
       def onClickSelection (args) :
         for i in range(len(args.path)) :
           if 'selection' in args.path[i].id :
-            console.log('id : ', args.path[i].id)
             selectionNo = int(args.path[i].id[len('selection')])
             doneAnswer(selectionNo)
             break

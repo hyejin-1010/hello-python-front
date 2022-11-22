@@ -53,6 +53,10 @@ body {
   font-size: 80px;
 }
 
+.circle img {
+  width: calc(100% - 50px)
+}
+
 .circle-even {
   margin-top: auto;
 }
