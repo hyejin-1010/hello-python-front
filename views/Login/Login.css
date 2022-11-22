@@ -39,6 +39,10 @@ input {
   font-weight: bold;
 }
 
+.btn-login:hover {
+  background: #266e27;
+}
+
 .box-signUp {
   margin-top: 15px;
   text-align: right;

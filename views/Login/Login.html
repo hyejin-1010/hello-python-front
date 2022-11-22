@@ -10,10 +10,10 @@
       <div class="box">
         <div>
           <div>
-            <input type="text" placeholder="아이디" />
+            <input type="text" placeholder="아이디" id="userIdInput" />
           </div>
           <div>
-            <input type="password" placeholder="비밀번호" />
+            <input type="password" placeholder="비밀번호" id="passwordInput" />
           </div>
         </div>
         <button id="loginBtn" class="btn-login">로그인</button>
@@ -24,12 +24,26 @@
     </div>
 
     <py-script>
-      from js import document, location 
+      from js import document, location, alert
       from pyodide import ffi
+      from pyodide.http import pyfetch
+      import asyncio
+      import json
 
       # 로그인 버튼 클릭 시 호출되는 함수 
-      def doLogin(args):
-        print('Do Login ...')
+      async def doLogin(args):
+        userid = Element('userIdInput').element.value  
+        password = Element('passwordInput').element.value  
+
+        if userid == "" or password == "":
+          return
+
+        response = await pyfetch(url="http://127.0.0.1:5001/login", method="POST", body=json.dumps({ 'userid': userid, 'password': password }))
+        response_dict = await response.json()
+        if response_dict['success'] == False :
+          alert('로그인에 실패했습니다.')
+        else :
+          location.href = '/views/Main/Main.html'
 
       # 회원가입 버튼 클릭 시 호출되는 함수 
       def goToSignUp(args): 
