@@ -18,8 +18,10 @@
     </div>
 
     <py-script>
-      from js import document, location 
+      from js import document, location, localStorage
       from pyodide import ffi
+
+      doneLectures = localStorage.getItem('doneLectures') or []
 
       def onClickCircle (args) :
         for i in range(len(args.path)) :
@@ -43,6 +45,9 @@
           lectureDiv.className = 'circle circle-even'
         else :
           lectureDiv.className = 'circle circle-odd'
+
+        if '{}'.format(i + 1) in doneLectures :
+          lectureDiv.className += ' done-circle'
 
         lectureDiv.setAttribute('id', circleId)
         lectureDiv.setAttribute('index', i)

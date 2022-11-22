@@ -68,3 +68,7 @@ body {
 .circle-dice:hover  {
   background: rgb(146, 115, 201);
 }
+
+.done-circle {
+  background: #cb9659;
+}
