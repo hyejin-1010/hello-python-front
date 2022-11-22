@@ -15,6 +15,7 @@ body {
 }
 
 .box {
+  position: relative;
   margin: auto;
   padding: 50px 60px;
   width: calc(90% - 120px);
@@ -23,6 +24,30 @@ body {
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 15px;
   text-align: center;
+}
+
+.btn-hint {
+  position: absolute;
+  top: -60px;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: #fff;
+  border-radius: 100%;
+  z-index: 1;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.btn-hint img {
+  margin: auto;
+  width: calc(100% - 20px)
+}
+
+.btn-hint:hover {
+  background: #FBFCF4;
 }
 
 .header, .sub-header {
@@ -77,7 +102,7 @@ body {
 }
 
 .box-answer {
-  display: flex;
+  display: none;
   margin-top: 20px;
 }
 
@@ -98,7 +123,7 @@ body {
 }
 
 .box-selection {
-  display: grid;
+  display: none;
   grid-template-columns: 1fr 1fr;
   margin-top: 10px;
 }
@@ -137,6 +162,41 @@ body {
   font-size: 22px;
 }
 
+.box-ox {
+  display: none;
+}
+
+.box-o, .box-x {
+  flex: 1;
+  margin: 15px 10px;
+  padding: 25px 0;
+  border: 2px solid gray;
+  border-radius: 5px;
+  font-size: 50px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.box-o {
+  color: blue;
+  border-color: blue;
+}
+
+.box-o:hover {
+  background: blue;
+  color: white;
+}
+
+.box-x {
+  color: red;
+  border-color: red;
+}
+
+.box-x:hover {
+  background: red;
+  color: white;
+}
+
 .dialog {
   display: none;
   flex-direction: column;
@@ -149,7 +209,9 @@ body {
   background: rgba(0, 0, 0, .3);
 }
 
-.dialog-content {
+.dialog-content, .box-hint {
+  flex-direction: column;
+  justify-content: center;
   margin: auto;
   padding: 20px 15px;
   width: 50%;
@@ -159,20 +221,47 @@ body {
   border-radius: 15px;
 }
 
+.box-hint {
+  padding: 10px 25px;
+  text-align: center;
+}
+
+.hint-title {
+  margin-bottom: 15px;
+  font-size: 32px;
+  color: #339535;
+  font-weight: bold;
+}
+
+.hint-content {
+  font-size: 26px;
+}
+
 .box-right, .box-wrong {
   display: none;
   margin-top: 15px;
+}
+
+.box-right .title, .box-wrong .title {
   text-align:center;
   font-weight: bold;
   font-size: 40px;
 }
 
-.box-right {
+.box-right .title {
   color: blue;
 }
 
-.box-wrong {
+.box-wrong .title {
   color: red;
+}
+
+.box-wrong .message {
+  margin: 20px 0;
+  padding: 10px 25px;
+  font-size: 22px;
+  color: rgb(62, 62, 62);
+  word-break: keep-all;
 }
 
 .box-commentary {
