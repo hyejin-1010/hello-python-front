@@ -13,7 +13,7 @@
     <div class="main">
       <div class="box">
         <div class="header">
-          <div class="title">파이썬 소개와 설치 안내</div>
+          <div class="title" id="title"></div>
           <button class="btn-next" id="nextBtn">다음</button>
         </div>
         <video id="studyVideo" controls></video>
@@ -27,7 +27,10 @@
       queries = location.href.split('?')[1]
       no = queries[len(queries) - 1]
       videoFilePath = '/videos/video_1_{}.mp4'.format(no)
-      console.log(videoFilePath)
+
+      titles = ['파이썬 설치 및 소개', '변수 및 자료형', '입출력', '조건문', '반복문']
+      titleDiv = document.getElementById('title')
+      titleDiv.innerHTML = titles[int(no) - 1]
 
       videoTag = document.getElementById('studyVideo')
       source = document.createElement('source')

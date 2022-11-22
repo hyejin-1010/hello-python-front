@@ -96,3 +96,102 @@ body {
   color: #fff;
   font-weight: bold;
 }
+
+.box-selection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 10px;
+}
+
+.selection {
+  display: flex;
+  cursor: pointer;
+  margin: 15px 0;
+  text-align: left;
+}
+
+.selection:hover .no {
+  background: #266e27;
+}
+
+.selection .no {
+  display: flex;
+  flex-direction: column;
+  margin-right: 15px;
+  width: 50px;
+  height: 50px;
+  background: #339535;
+  border-radius: 100%;
+}
+
+.selection .no div {
+  margin: auto;
+  color: #fff;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.selection .content {
+  flex: 1;
+  padding: 10px 0;
+  font-size: 22px;
+}
+
+.dialog {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, .3);
+}
+
+.dialog-content {
+  margin: auto;
+  padding: 20px 15px;
+  width: 50%;
+  height: 50%;
+  background: #fff;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 15px;
+}
+
+.box-right, .box-wrong {
+  display: none;
+  margin-top: 15px;
+  text-align:center;
+  font-weight: bold;
+  font-size: 40px;
+}
+
+.box-right {
+  color: blue;
+}
+
+.box-wrong {
+  color: red;
+}
+
+.box-commentary {
+  padding: 5px 15px;
+  font-size: 26px;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.box-result-buttons {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.btn-done-result {
+  padding: 5px 25px;
+  background: #339535;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 24px;
+  color: #fff;
+}

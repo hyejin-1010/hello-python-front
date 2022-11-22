@@ -28,9 +28,43 @@
           </div>
         </div>
 
-        <div class="box-answer">
-          <input type="text" />
+        <div class="box-answer" id="inputAnswerBox">
+          <input type="text" id="inputAnswer" />
           <button class="btn-answer" id="answerBtn">답변</button>
+        </div>
+
+        <div class="box-selection" id="selectionAnswerBox">
+          <div class="selection" id="selection1">
+            <div class="no">
+              <div>1</div>
+            </div>
+            <div class="content" id="selection1Content"></div>
+          </div>
+          <div class="selection" id="selection2">
+            <div class="no"><div>2</div></div>
+            <div class="content" id="selection2Content"></div>
+          </div>
+          <div class="selection" id="selection3">
+            <div class="no"><div>3</div></div>
+            <div class="content" id="selection3Content"></div>
+          </div>
+          <div class="selection" id="selection4">
+            <div class="no"><div>4</div></div>
+            <div class="content" id="selection4Content"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dialog" id="dialog">
+        <div class="dialog-content" id="dialogContent">
+          <div class="box-right" id="rightBox">정답입니다</div>
+          <div class="box-wrong" id="wrongBox">오답입니다</div>
+
+          <div class="box-commentary" id="commentaryBox"></div>
+
+          <div class="box-result-buttons">
+            <button class="btn-done-result" id="doneResult">확인</button>
+          </div>
         </div>
       </div>
     </div>
@@ -44,12 +78,30 @@
       no = queries[len(queries) - 1]
 
       step = 0
+      lastResult = False
 
+      pointGames = [
+        [
+          { 'point': 5, 'title': '우리가 앞으로 학습할 프로그래밍 언어의 이름은 무엇일까요?', 'answer': '파이썬', 'type': 'input', 'hint': '우리 사이트 이름을 잘 떠올려 볼까요?' },
+          { 'point': 5, 'title': '파이썬은 우리말(한국어)로 무엇을 나타내는 단어일까요?', 'answer': '비단뱀', 'type': 'input', 'hint': '비단 모양의 구렁이를 떠올려 볼까요?', 'commentary': '파이썬은 우리말로 ‘비단뱀’이라는 뜻을 가지고 있어요!' },
+          { 'point': 5, 'title': '파이썬의 사용 분야가 아닌 것을 고르시오.', 'answer': 4, 'type': 'selection', 'selections': ['빅데이터', '머신러닝', '인공지능(AI)', 'VR'], 'hint': '파이썬은 가상현실 분야에서는 쓰이지 않아요~', 'commentary': '파이썬은 빅데이터, 머신러닝, 인공지능, 웹 등 여러 분야에서 사용되고 있어요!' }
+        ],
+        [
+          { 'point': 5, 'title': '프로그래밍 언어에서 데이터 이름 뜻하거나 일시적으로 데이터를 저장하는 장소를 무엇이라고 부르나요?', 'answer': 1, 'type': 'selection', 'selections': ['변수', '연산자', '유리수', '명령어'], 'hint': '값이 계속 변할 수 있다는 특징을 가지고 있어요!', 'commentary': '데이터의 이름을 뜻하거나 일시적으로 데이터를 저장하는 공간을 우리는 ‘변수’라고 불러요!' },
+          { 'point': 5, 'title': '다음 중 파이썬에서 ‘라이언’ 또는 “Hello”라는 문자는 파이썬에서 어떤 데이터 타입에 해당할까요?', 'answer': 2, 'type': 'selection', 'selections': ['bool', 'str', 'int',' float'], 'hint': '각각의 자료형이 쓰이는 데이터 유형에 대해서 다시 한 번 떠올려 볼까요?', 'commentary': "str형(라이언, Hello와 같은 문자값)<br/>bool형(‘Ture’ 또는 ‘False’)<br/>int형(10, 20, 30과 같은 정수값)<br/>float형(0.2, 0.03과 같은 실수값)" },
+          { 'point': 5, 'title': '변수의 가장 알맞은 특징인 것을 고르시오.', 'answer': 3, 'type': 'selection', 'selections': ['변수명은 숫자를 먼저 사용해도 상관없다.', '변수명은 예약어를 사용해도 된다.', '변수명은 대/소문자를 구분한다.', '변수명은 띄어쓰기를 사용할 수 있다.'], 'hint': "‘Number’과 ‘number’이라는 변수는 비슷해보이지만 알고 보면 서로 다른 변수랍니다!", 'commentary': '변수명을 작성할 때에는 반드시 문자로 시작해야 하고, 프로그래밍 언어에서 미리 지정한 예약어를 사용해서는 안돼요! 또한 언더바(_)는 사용할 수 있지만 띄어쓰기는 사용할 수 없는 특징을 가지고 있어요~ ' }
+        ]
+      ]
+
+      '''
       games = [
         { 'point': 3, 'title': '"안녕 파이썬"을 출력하는 프로그램을 완성시켜보세요!', 'content': '<div class="blank"></div>("안녕 파이썬")', 'answer': 'print' },
         { 'point': 5, 'title': '"안녕 파이썬"을 출력하는 프로그램을 완성시켜보세요!', 'content': '<div class="blank"></div>("안녕 파이썬")', 'answer': 'print' },
         { 'point': 8, 'title': '"안녕 파이썬"을 출력하는 프로그램을 완성시켜보세요!', 'content': '<div class="blank"></div>("안녕 파이썬")', 'answer': 'print' }
       ]
+      '''
+
+      games = pointGames[int(no) - 1]
 
       def initialize () :
         title = document.getElementById('title')
@@ -62,18 +114,86 @@
         questionTitle = document.getElementById('questionTitle')
         questionTitle.innerHTML = game['title']
         questionContent = document.getElementById('questionContent')
-        questionContent.innerHTML = game['content']
+        if 'content' in game :
+          questionContent.style.display = 'block'
+          questionContent.innerHTML = game['content']
+        else :
+          questionContent.style.display = 'none'
+
+        inputAnswerBox = document.getElementById('inputAnswerBox')
+        selectionAnswerBox = document.getElementById('selectionAnswerBox')
+        if game['type'] == 'input' :
+          selectionAnswerBox.style.display = 'none'
+          inputAnswerBox.style.display = 'flex'
+        else :
+          selectionAnswerBox.style.display = 'grid'
+          inputAnswerBox.style.display = 'none'
+
+          for i in range(len(game['selections'])) :
+            selection = game['selections'][i]
+            selectionEl = document.getElementById('selection{}Content'.format(i + 1))
+            selectionEl.innerHTML = selection
+
+      def doneAnswer (answer) :
+        global step, games, lastResult
+        game = games[step]
+
+        dialog = document.getElementById('dialog') 
+        dialog.style.display = 'flex'
+
+        rightBox = document.getElementById('rightBox') 
+        wrongBox = document.getElementById('wrongBox') 
+        commentaryBox = document.getElementById('commentaryBox') 
+
+        lastResult = game['answer'] == answer
+        if lastResult :
+          rightBox.style.display = 'block'
+          wrongBox.style.display = 'none'
+          commentaryBox.innerHTML = game['commentary']
+          commentaryBox.style.display = 'block'
+        else :
+          rightBox.style.display = 'none'
+          wrongBox.style.display = 'block'
+          commentaryBox.style.display = 'none'
+
+        # 정답 체크 
+        # step = step + 1
+        # initialize()
 
       def doAnswer (args) :
-        # 정답 체크 
+        value = Element('inputAnswer').element.value  
+        doneAnswer(value)
+
+      def onClickSelection (args) :
+        for i in range(len(args.path)) :
+          if 'selection' in args.path[i].id :
+            selectionNo = int(args.path[i].id[len('selection')])
+            doneAnswer(selectionNo)
+            break
+
+      def onClickDialogDoneButton (args) :
         global step
-        step = step + 1
-        initialize()
+
+        if lastResult :
+          step = step + 1
+          if step >= 3 :
+            location.href = '/views/Main/Main.html'
+          else :
+            initialize()
+        dialog = document.getElementById('dialog') 
+        dialog.style.display = 'none'
 
       initialize()
 
       answerBtn = document.getElementById('answerBtn')
       answerBtn.addEventListener('click', ffi.create_proxy(doAnswer))
+
+      for i in range(4) :
+        selection = document.getElementById('selection{}'.format(i + 1))
+        selection.addEventListener('click', ffi.create_proxy(onClickSelection))
+
+      doneResult = document.getElementById('doneResult')
+      doneResult.addEventListener('click', ffi.create_proxy(onClickDialogDoneButton))
     </py-script>
   </body>
 </html>
