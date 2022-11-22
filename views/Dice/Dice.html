@@ -1,0 +1,296 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <link rel="stylesheet" href="./Dice.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
+  </head>
+  <body>
+    <header>
+      <object type="text/html" data="../../components/Navbar/Navbar.html" class="navbar"></object>  
+    </header>
+
+    <div class="main">
+      <div class="box">
+        <!-- 8 x 5 -->
+        <div class="dice-row">
+          <div class="dice-box" id="diceBox11"></div>
+          <div class="dice-box" id="diceBox12"></div>
+          <div class="dice-box" id="diceBox13"></div>
+          <div class="dice-box" id="diceBox14"></div>
+          <div class="dice-box" id="diceBox15"></div>
+          <div class="dice-box" id="diceBox16"></div>
+          <div class="dice-box" id="diceBox17"></div>
+          <div class="dice-box" id="diceBox18"></div>
+        </div>
+        <div class="dice-row">
+          <div class="dice-box" id="diceBox10"></div>
+          <div class="blank"></div>
+          <div class="dice-box" id="diceBox19"></div>
+        </div>
+        <div class="dice-row">
+          <div class="dice-box" id="diceBox9"></div>
+          <div class="blank"></div>
+          <div class="dice-box" id="diceBox20"></div>
+        </div>
+        <div class="dice-row">
+          <div class="dice-box" id="diceBox8"></div>
+          <div class="blank"></div>
+          <div class="dice-box" id="diceBox21"></div>
+        </div>
+        <div class="dice-row">
+          <div class="dice-box" id="diceBox7"></div>
+          <div class="dice-box" id="diceBox6"></div>
+          <div class="dice-box" id="diceBox5"></div>
+          <div class="dice-box" id="diceBox4"></div>
+          <div class="dice-box" id="diceBox3"></div>
+          <div class="dice-box" id="diceBox2"></div>
+          <div class="dice-box" id="diceBox1"></div>
+          <div class="dice-box" id="diceBox0">
+            <img class="user" src="/images/user1.jpg" id="user1Image" />
+            <img class="user" src="/images/user2.jpg" id="user2Image" />
+          </div>
+        </div>
+
+        <div class="box-btn-dice">
+          <div class="btnDice" id="btnDice">
+            주사위<br/>
+            굴리기
+          </div>
+
+          <section id="diceBox">
+            <div class="dice_wrap">
+              <div class="dice01">
+                <div class="dice_inner">
+                  <div class="dice" id="dice">
+                    <div class="face1" id="face1">1</div>
+                    <div class="face2" id="face2">2</div>
+                    <div class="face3" id="face3">3</div>
+                    <div class="face4" id="face4">4</div>
+                    <div class="face5" id="face5">5</div>
+                    <div class="face6" id="face6">6</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div class="dialog" id="dialog">
+        <div class="dialog-content">
+          <div class="question-title" id="questionTitle"></div>
+          <div class="question-content" id="questionContent"></div>
+          <div class="question-selection" id="questionSelection">
+            <div class="selection" id="selection1">
+              <div class="no">
+                <div>1</div>
+              </div>
+              <div class="content" id="selection1Content"></div>
+            </div>
+            <div class="selection" id="selection2">
+              <div class="no"><div>2</div></div>
+              <div class="content" id="selection2Content"></div>
+            </div>
+            <div class="selection" id="selection3">
+              <div class="no"><div>3</div></div>
+              <div class="content" id="selection3Content"></div>
+            </div>
+            <div class="selection" id="selection4">
+              <div class="no"><div>4</div></div>
+              <div class="content" id="selection4Content"></div>
+            </div>
+          </div>
+          <div class="question-input" id="questionInput">
+            <input type="text" id="questionAnswerInput" />
+            <button class="btn-done" id="doneBtn">답변</button>
+          </div>
+          <div class="question-ox" id="questionOX">
+            <div class="o" id="oBtn">O</div>
+            <div class="x" id="xBtn">X</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <py-script>
+      from js import document, location, alert
+      from pyodide import ffi
+      import random
+      from time import time
+      import asyncio
+
+      user1Value = 0
+      user1BeforeValue = 0
+      user2Value = 0
+      user2BeforeValue = 0
+
+      isRolling = False
+
+      dice = document.getElementById('dice')
+      dice_width = dice.clientWidth
+      face1 = document.getElementById('face1')
+      face2 = document.getElementById('face2')
+      face3 = document.getElementById('face3')
+      face4 = document.getElementById('face4')
+      face5 = document.getElementById('face5')
+      face6 = document.getElementById('face6')
+
+      questions = [
+        { 'title': '다음 중 파이썬의 특징이 아닌 것을 고르세요.', 'answer': 1, 'selections': ['파이썬은 컴파일러 언어이다.', '파이썬의 개발자는 ‘귀도 반 로섬’이다.', '파이썬은 1991년에 개발되었다.', '파이썬은 우리말로 ‘비단뱀’을 뜻한다.'], 'type': 'selection' },
+        { 'title': '파이썬은 다른 프로그래밍 언어(Java, C+ 등등)에 비해 비교적 쉽고 간단하다.<br/>맞으면 O, 틀리면 X', 'answer': 'O', 'type': 'OX' },
+        { 'title': '파이썬의 사용 분야를 생각해보고, 한 곳만 입력해보세요.', 'answer': '머신러닝', 'type': 'input' },
+        { 'title': "‘number’라는 변수에 숫자 ‘100’을 넣는 코드를 작성해보세요.", 'answer': 'number = 100', 'type': 'input' },
+        { 'title': '다음과 같이 입력했을 때 화면에출력되는 값은?', 'content': '년도 = 1990<br/>년도 = 2022<br/>print(년도)<br/>', 'answer': '2022', 'type': 'input' },
+        { 'title': "‘color’과 ‘Color’은 같은 변수이다. 맞으면 O, 틀리면 X", 'answer': 'X', 'type': 'OX' },
+        { 'title': "‘숫자’라는 변수 안에 10, 20, 30 값이 들어간 리스트(list)를 만들어보세요.", 'answer': '숫자 = [10, 20, 30]', 'type': 'input' },
+        { 'title': '데이터 값을 사용자로부터 입력 받는 함수는 무엇인가요?', 'answer': 'input', 'type': 'input' },
+        { 'title': '주어진 변수 “나이” 를 출력해보세요.', 'content': '주어진 변수 “나이” 를 출력해보세요.', 'answer': 'print(나이)', 'type': 'input' },
+        { 'title': '제어문의 종류로 알맞지 않은것은?', 'type': 'selection', 'answer': 4, 'selections': ['for', 'while', 'if', 'int'] },
+      ]
+
+      def diceResizing() :
+        face1.style.transform = 'rotateY(0deg) translateZ({}px)'.format(dice_width/2)
+        face2.style.transform = 'rotateY(90deg) translateZ({}px)'.format(dice_width/2)
+        face3.style.transform = 'rotateX(90deg) translateZ({}px)'.format(dice_width/2)
+        face4.style.transform = 'rotateX(270deg) translateZ({}px)'.format(dice_width/2)
+        face5.style.transform = 'rotateY(270deg) translateZ({}px)'.format(dice_width/2)
+        face6.style.transform = 'rotateY(180deg) translateZ({}px)'.format(dice_width/2)
+
+      diceResizing()
+
+      def getRandomDiceNumber () :
+        return random.randrange(0, 6) + 1
+
+      def createUserImage (no) :
+        image = document.createElement('img')
+        image.src = '/images/user{}.jpg'.format(no)
+        image.className = 'user'
+        image.setAttribute('id', 'user{}Image'.format(no))
+        return image
+      
+      def drawUser () :
+        global user1Value, user2Value
+
+        user1Image = document.getElementById('user1Image')
+        user1Image.remove()
+        user2Image = document.getElementById('user2Image')
+        user2Image.remove()
+
+        user1Image = createUserImage(1)
+        user2Image = createUserImage(2)
+        diceBox = document.getElementById('diceBox{}'.format(user1Value))
+        diceBox.appendChild(user1Image)
+        diceBox2 = document.getElementById('diceBox{}'.format(user2Value))
+        diceBox2.appendChild(user2Image)
+
+      def showDialog () :
+        global user1Value, questions
+        dialog = document.getElementById('dialog')
+        dialog.style.display = 'flex'
+        if user1Value - 1 >= len(questions) :
+          return
+        question = questions[user1Value - 1]
+        questionTitle = document.getElementById('questionTitle')
+        questionTitle.innerHTML = '{}. {}'.format(user1Value, question['title'])
+
+        questionContent = document.getElementById('questionContent')
+        questionSelection = document.getElementById('questionSelection')
+        questionInput = document.getElementById('questionInput')
+        questionOX = document.getElementById('questionOX')
+
+        if 'content' in question :
+          questionContent.style.display = 'block'
+          questionContent.innerHTML = question['content']
+        else :
+          questionContent.style.display = 'none'
+
+        if question['type'] == 'OX' :
+          questionSelection.style.display = questionInput.style.display = 'none'
+          questionOX.style.display = 'flex'
+        elif question['type'] == 'input' :
+          questionSelection.style.display = questionOX.style.display = 'none'
+          questionInput.style.display = 'flex'
+        else :
+          questionInput.style.display = questionOX.style.display = 'none'
+          questionSelection.style.display = 'block'
+          for i in range(len(question['selections'])) :
+            selection = question['selections'][i]
+            selectionEl = document.getElementById('selection{}Content'.format(i + 1))
+            selectionEl.innerHTML = selection
+
+      async def rolling (args) :
+        global user1Value, user2Value, isRolling
+        if isRolling == True :
+          return
+
+        isRolling = True
+        randomValue = getRandomDiceNumber()
+        dice.classList.value = 'dice'
+        diceClass = 'face{}'.format(randomValue)
+        dice.classList.add(diceClass)
+
+        user1Value += randomValue
+        if user1Value >= 21 :
+          alert('승리했습니다.')
+          return
+        await asyncio.sleep(0.7)
+        drawUser()
+        await asyncio.sleep(0.7)
+        user2Value += getRandomDiceNumber()
+        if user2Value >= 21 :
+          alert('패배했습니다.')
+          return
+        drawUser()
+        isRolling = False
+        showDialog()
+
+      def doneAnswer (answer) :
+        global questions, user1Value, user1BeforeValue
+        question = questions[user1Value - 1]
+        if question['answer'] == answer :
+          alert('정답입니다.')
+          user1BeforeValue = user1Value
+        else :
+          alert('오답입니다. 다시 원래 자리로 돌아가게 됩니다.')
+          user1Value = user1BeforeValue
+        dialog = document.getElementById('dialog')
+        dialog.style.display = 'none'
+        drawUser()
+
+      def doneAnswerInput (args) :
+        value = Element('questionAnswerInput').element.value  
+        doneAnswer(value)
+        Element('questionAnswerInput').element.value = ''
+
+      def onClickOButton (args) :
+        doneAnswer('O')
+      
+      def onClickXButton (args) :
+        doneAnswer('X')
+      
+      def onClickSelection (args) :
+        for i in range(len(args.path)) :
+          if 'selection' in args.path[i].id :
+            console.log('id : ', args.path[i].id)
+            selectionNo = int(args.path[i].id[len('selection')])
+            doneAnswer(selectionNo)
+            break
+      
+      btnDice = document.getElementById('btnDice')
+      btnDice.addEventListener('click', ffi.create_proxy(rolling))
+
+      doneBtn = document.getElementById('doneBtn')
+      doneBtn.addEventListener('click', ffi.create_proxy(doneAnswerInput))
+
+      oBtn = document.getElementById('oBtn')
+      oBtn.addEventListener('click', ffi.create_proxy(onClickOButton))
+      xBtn = document.getElementById('xBtn')
+      xBtn.addEventListener('click', ffi.create_proxy(onClickXButton))
+
+      for i in range(4) :
+        selection = document.getElementById('selection{}'.format(i + 1))
+        selection.addEventListener('click', ffi.create_proxy(onClickSelection))
+    </py-script>
+  </body>
+</html>
