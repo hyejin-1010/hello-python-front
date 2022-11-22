@@ -93,8 +93,10 @@ img.user {
 }
 
 .dialog-content, .box-result {
+  flex-direction: column;
+  justify-content: center;
   margin: auto;
-  padding: 20px 15px;
+  padding: 20px 25px;
   width: 50%;
   height: 50%;
   background: #fff;
@@ -140,6 +142,7 @@ img.user {
 }
 
 .question-title {
+  margin-bottom: 20px;
   color: #339535;
   font-size: 30px;
   font-weight: bold;

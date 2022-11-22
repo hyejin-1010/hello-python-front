@@ -250,7 +250,7 @@
             selectionEl.innerHTML = selection
         
         dialogContent = document.getElementById('dialogContent')
-        dialogContent.style.display = 'block'
+        dialogContent.style.display = 'flex'
 
       async def rolling (args) :
         global user1Value, user2Value, isRolling
@@ -265,6 +265,10 @@
 
         user1Value += randomValue
         if user1Value >= 21 :
+          user1Value = 0 
+          await asyncio.sleep(0.7)
+          drawUser()
+          await asyncio.sleep(0.7)
           alert('승리했습니다.')
           location.href = '/views/Main/Main.html'
           return
@@ -290,7 +294,7 @@
         dialogResult = document.getElementById('dialogResult')
 
         dialogContent.style.display = 'none'
-        dialogResult.style.display = 'block'
+        dialogResult.style.display = 'flex'
 
         resultRight = document.getElementById('resultRight')
         resultWrong = document.getElementById('resultWrong')
