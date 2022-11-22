@@ -52,27 +52,29 @@
           </div>
         </div>
 
-        <div class="btnDice" id="btnDice">
-          주사위<br/>
-          굴리기
-        </div>
+        <div class="box-btn-dice">
+          <div class="btnDice" id="btnDice">
+            주사위<br/>
+            굴리기
+          </div>
 
-        <section id="diceBox">
-          <div class="dice_wrap">
-            <div class="dice01">
-              <div class="dice_inner">
-                <div class="dice" id="dice">
-                  <div class="face1" id="face1">1</div>
-                  <div class="face2" id="face2">2</div>
-                  <div class="face3" id="face3">3</div>
-                  <div class="face4" id="face4">4</div>
-                  <div class="face5" id="face5">5</div>
-                  <div class="face6" id="face6">6</div>
+          <section id="diceBox">
+            <div class="dice_wrap">
+              <div class="dice01">
+                <div class="dice_inner">
+                  <div class="dice" id="dice">
+                    <div class="face1" id="face1">1</div>
+                    <div class="face2" id="face2">2</div>
+                    <div class="face3" id="face3">3</div>
+                    <div class="face4" id="face4">4</div>
+                    <div class="face5" id="face5">5</div>
+                    <div class="face6" id="face6">6</div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
       </div>
 
       <div class="dialog" id="dialog">
@@ -141,7 +143,10 @@
         { 'title': "‘number’라는 변수에 숫자 ‘100’을 넣는 코드를 작성해보세요.", 'answer': 'number = 100', 'type': 'input' },
         { 'title': '다음과 같이 입력했을 때 화면에출력되는 값은?', 'content': '년도 = 1990<br/>년도 = 2022<br/>print(년도)<br/>', 'answer': '2022', 'type': 'input' },
         { 'title': "‘color’과 ‘Color’은 같은 변수이다. 맞으면 O, 틀리면 X", 'answer': 'X', 'type': 'OX' },
-        { 'title': "‘숫자’라는 변수 안에 10, 20, 30 값이 들어간 리스트(list)를 만들어보세요.", 'answer': '숫자 = [10, 20, 30]', 'type': 'input' }
+        { 'title': "‘숫자’라는 변수 안에 10, 20, 30 값이 들어간 리스트(list)를 만들어보세요.", 'answer': '숫자 = [10, 20, 30]', 'type': 'input' },
+        { 'title': '데이터 값을 사용자로부터 입력 받는 함수는 무엇인가요?', 'answer': 'input', 'type': 'input' },
+        { 'title': '주어진 변수 “나이” 를 출력해보세요.', 'content': '주어진 변수 “나이” 를 출력해보세요.', 'answer': 'print(나이)', 'type': 'input' },
+        { 'title': '제어문의 종류로 알맞지 않은것은?', 'type': 'selection', 'answer': 4, 'selections': ['for', 'while', 'if', 'int'] },
       ]
 
       def diceResizing() :
@@ -183,6 +188,8 @@
         global user1Value, questions
         dialog = document.getElementById('dialog')
         dialog.style.display = 'flex'
+        if user1Value - 1 >= len(questions) :
+          return
         question = questions[user1Value - 1]
         questionTitle = document.getElementById('questionTitle')
         questionTitle.innerHTML = '{}. {}'.format(user1Value, question['title'])
@@ -223,11 +230,17 @@
         diceClass = 'face{}'.format(randomValue)
         dice.classList.add(diceClass)
 
-        user1Value += randomValue        
+        user1Value += randomValue
+        if user1Value >= 21 :
+          alert('승리했습니다.')
+          return
         await asyncio.sleep(0.7)
         drawUser()
         await asyncio.sleep(0.7)
         user2Value += getRandomDiceNumber()
+        if user2Value >= 21 :
+          alert('패배했습니다.')
+          return
         drawUser()
         isRolling = False
         showDialog()
@@ -239,7 +252,7 @@
           alert('정답입니다.')
           user1BeforeValue = user1Value
         else :
-          alert('오답입니다.')
+          alert('오답입니다. 다시 원래 자리로 돌아가게 됩니다.')
           user1Value = user1BeforeValue
         dialog = document.getElementById('dialog')
         dialog.style.display = 'none'
@@ -248,6 +261,7 @@
       def doneAnswerInput (args) :
         value = Element('questionAnswerInput').element.value  
         doneAnswer(value)
+        Element('questionAnswerInput').element.value = ''
 
       def onClickOButton (args) :
         doneAnswer('O')
