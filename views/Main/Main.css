@@ -72,3 +72,84 @@ body {
 .done-circle {
   background: #cb9659;
 }
+
+/**
+ * Navbar 관련 css 
+**/
+header {
+  height: 65px;
+  margin: 0;
+  background: #339535;
+}
+
+.navbar {
+  display: flex;
+  width: calc(100% - 40px);
+  height: 65px;
+  padding: 0 20px;
+}
+
+.logo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.logo > span {
+  font-size: 22px;
+  color: #fff;
+  font-weight: bold;
+}
+
+.blank {
+  flex: 1;
+}
+
+.btn {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  color: white;
+}
+
+/**
+* Dialog
+**/
+.dialog {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, .3);
+}
+
+.dialog-content {
+  flex-direction: column;
+  justify-content: center;
+  margin: auto;
+  padding: 20px 25px;
+  width: 50%;
+  height: 80%;
+  background: #fff;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 15px;
+}
+
+.dialog-header {
+  text-align: right;
+}
+
+.btn-close {
+  cursor: pointer;
+  color: #339535;
+  font-weight: bold;
+  font-size: 22px;
+}

@@ -7,12 +7,34 @@
   </head>
   <body>
     <header>
+      <!--
       <object type="text/html" data="../../components/Navbar/Navbar.html" class="navbar"></object>  
+      -->
+      <div class="navbar">
+        <div class="logo" id="logo">
+          <span>헬로파이썬</span>
+        </div>
+  
+        <div class="blank"></div>
+        <div class="btn" id="rankingBtn"><span>랭킹 확인하기</span></div> 
+        <div class="btn" id="myPageBtn"><span>마이페이지</span></div> 
+      </div>
     </header>
 
     <div class="main">
       <div class="box">
         <div class="box-circles" id="box-circles">
+        </div>
+      </div>
+
+      <div class="dialog" id="dialog">
+        <div class="ranking-content dialog-content" id="rankingContent">
+          <div class="dialog-header">
+            <span id="closeDialogBtn" class="btn-close">X</span>
+          </div>
+
+          <!-- TODO: 한비님이 작업해주세용 !! -->
+          Ranking 확인하기 ... 
         </div>
       </div>
     </div>
@@ -65,6 +87,26 @@
         document.getElementById('box-circles').append(lectureDiv)
 
         lectureDiv.addEventListener('click', ffi.create_proxy(onClickCircle))
+
+      def showRankingDialog (args) :
+        dialog = document.getElementById('dialog')
+        dialog.style.display = 'flex'
+
+      def closeDialog (args) : 
+        dialog = document.getElementById('dialog')
+        dialog.style.display = 'none'
+
+      def goToMyPage (args) :
+        location.href = '/views/MyPage/MyPage.html'
+
+      rankingBtn = document.getElementById('rankingBtn')
+      rankingBtn.addEventListener('click', ffi.create_proxy(showRankingDialog))
+
+      closeDialogBtn = document.getElementById('closeDialogBtn')
+      closeDialogBtn.addEventListener('click', ffi.create_proxy(closeDialog))
+
+      myPageBtn = document.getElementById('myPageBtn')
+      myPageBtn.addEventListener('click', ffi.create_proxy(goToMyPage))
     </py-script>
   </body>
 </html>
