@@ -15,20 +15,16 @@ body {
 }
 
 .box {
-  display: flex;
-  margin: auto;
-  padding: 100px 60px;
-  width: calc(90% - 120px);
-  height: 200px;
-  background: #fff;
+  position: absolute;
+  width: 851px;
+  height: 300px;
+  left: 279px;
+  top: 173px;
+  background: #FFFFFF;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 15px;
-  text-align: center;
 }
 
-/**
- * Navbar 관련 css 
-**/
 header {
   height: 65px;
   margin: 0;
@@ -67,4 +63,25 @@ header {
   font-weight: 600;
   font-size: 16px;
   color: white;
+}
+
+.profile-user-name {
+  color: #000000;
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.profile-point-status {
+  font-size: 24px;
+  color: #000000;
+}
+
+.profile-edit-btn {
+  border:none;
+  background-color: white;
+  position: absolute;
+  width: 43px;
+  height: 43px;
+  left: 722px;
+  top: 273px;
 }

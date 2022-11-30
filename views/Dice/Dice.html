@@ -47,8 +47,8 @@
           <div class="dice-box" id="diceBox2"></div>
           <div class="dice-box" id="diceBox1"></div>
           <div class="dice-box" id="diceBox0">
-            <img class="user" src="/images/user1.png" id="user1Image" />
-            <img class="user" src="/images/user2.png" id="user2Image" />
+            <img class="user" src="../../images/user1.png" id="user1Image" />
+            <img class="user" src="../../images/user2.png" id="user2Image" />
           </div>
         </div>
 
@@ -193,7 +193,7 @@
       # 이미지 (주사위 게임 유저 아이콘) 생성하는 함수 
       def createUserImage (no) :
         image = document.createElement('img')
-        image.src = '/images/user{}.png'.format(no)
+        image.src = '../../images/user{}.png'.format(no)
         image.className = 'user'
         image.setAttribute('id', 'user{}Image'.format(no))
         return image

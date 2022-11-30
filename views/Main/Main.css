@@ -153,3 +153,75 @@ header {
   font-weight: bold;
   font-size: 22px;
 }
+
+.header {
+  display: flex;
+}
+
+.title {
+  flex: 1;
+  text-align: center;
+}
+
+.title {
+  color: #FAC17F;
+  font-size: 50px;
+  font-weight: bold;
+}
+
+.title {
+  color: #FAC17F;
+  font-size: 50px;
+  font-weight: bold;
+}
+
+.rank_wrap{
+  padding: 0;
+}
+
+.rank_item{
+  display: flex;
+  justify-content: space-between;
+  line-height: 80px;
+  list-style: none;
+  border-bottom: 1px solid #B5B5B5;
+}
+
+.rank_item_wrap{
+  display: flex;
+}
+
+.rank_number {
+  color: #AC88EB;
+  font-size: 50px;
+  font-weight: bold;
+
+}
+
+.rank_nickname {
+  color: #000000;
+  font-size: 25px;
+  font-weight: bold;
+  padding-left: 81px;
+  position: relative;
+  display: block;
+  width: auto;
+}
+.rank_nickname::after{
+  content : '';
+  background-image: url("../../images/ProfileImage.svg");
+  width: 33px;
+  height: 33px;
+  display: block;
+  position: absolute;
+  left: 28px;
+  top: 53%;
+  transform:translateY(-50%);
+}
+
+
+.rank_point {
+  color: #FCC21B;
+  font-size: 18px;
+  font-weight: bold;
+}

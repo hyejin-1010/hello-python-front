@@ -50,6 +50,10 @@ video {
   color: #ffffff;
   font-weight: bold;
   font-size: 22px;
+  border-top: 2px solid #339535; 
+  border-bottom: 2px solid #339535;
+  border-left: 2px solid #339535; 
+  border-right: 2px solid #339535;
 }
 
 .btn-next:hover {

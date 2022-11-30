@@ -23,8 +23,7 @@
 
     <div class="main">
       <div class="box">
-        <div class="box-circles" id="box-circles">
-        </div>
+        <div class="box-circles" id="box-circles"></div>
       </div>
 
       <div class="dialog" id="dialog">
@@ -32,16 +31,59 @@
           <div class="dialog-header">
             <span id="closeDialogBtn" class="btn-close">X</span>
           </div>
-
+          <div class="line"></div>
           <!-- TODO: 한비님이 작업해주세용 !! -->
-          Ranking 확인하기 ... 
+          <div class="header" id="header">
+            <div class="title" id="title">RANK</div>
+          </div>
+         
+          <ul class="rank_wrap">
+            <li class="rank_item">
+              <div class="rank_item_wrap">
+                <span class="rank_number">1</span>
+                <span class="rank_nickname" style=margin-left:5px;>Nickname_1</span>
+              </div>
+              <span class="rank_point">125 point</span>
+            </li>
+            <li class="rank_item">
+              <div class="rank_item_wrap">
+                <span class="rank_number">2</span>
+                <span class="rank_nickname">Nickname_2</span>
+              </div>
+              <span class="rank_point">95 point</span>
+            </li>
+            <li class="rank_item">
+              <div class="rank_item_wrap">
+                <span class="rank_number">3</span>
+                <span class="rank_nickname">Nickname_3</span>
+              </div>
+              <span class="rank_point">85 point</span>
+            </li>
+            <li class="rank_item">
+              <div class="rank_item_wrap">
+                <span class="rank_number">4</span>
+                <span class="rank_nickname">Nickname_4</span>
+              </div>
+              <span class="rank_point">25 point</span>
+            </li>
+          </ul>
+          </div>
         </div>
       </div>
     </div>
 
     <py-script>
+
       from js import document, location, localStorage
       from pyodide import ffi
+      from pyodide.http import pyfetch
+      import asyncio
+      import json
+
+      # 랭킹 확인하기 버튼 클릭시 호출되는 함수
+      async def ViewRanking(args):
+        response = await pyfetch(url="http://127.0.0.1:5001/Ranking", method="GET")
+        response_dict = await response.json()
 
       doneLectures = localStorage.getItem('doneLectures') or []
 
@@ -78,7 +120,7 @@
         lectureSpan = document.createElement('span')
         if isDice :
           diceImg = document.createElement('img')
-          diceImg.src = '/images/dice.png'
+          diceImg.src = '../../images/dice.png'
           lectureSpan.appendChild(diceImg)
         else :
           lectureSpan.appendChild(document.createTextNode(i + 1))

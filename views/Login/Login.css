@@ -20,6 +20,7 @@ body {
 
 input, .btn-login, .box-signup {
   margin: auto;
+  border-color: #B4B4B4;
   width: calc(100% - 150px);
 }
 
@@ -27,7 +28,10 @@ input {
   margin: 7px 0;
   padding: 7px 10px;
   border-radius: 5px;
-  border-color: #B4B4B4;
+  border-top: 2px solid #B4B4B4; 
+  border-bottom: 2px solid #B4B4B4;
+  border-left: 2px solid #B4B4B4; 
+  border-right: 2px solid #B4B4B4;
 }
 
 .btn-login {
@@ -37,6 +41,10 @@ input {
   border-radius: 5px;
   color: #ffffff;
   font-weight: bold;
+  border-top: 2px solid #339535; 
+  border-bottom: 2px solid #339535;
+  border-left: 2px solid #339535; 
+  border-right: 2px solid #339535;
 }
 
 .btn-login:hover {
@@ -52,4 +60,22 @@ input {
   cursor: pointer;
   color: #339535;
   font-weight: bold;
+}
+.title {
+  margin:auto;
+  position: absolute;
+  width: 30%;
+  height: 139px;
+  left: 499px;
+  top: 146px;
+
+  font-weight: 700;
+  font-size: 80px;
+  line-height: 139px;
+  /* identical to box height */
+  
+  
+  color: #339535;
+
+
 }
