@@ -77,8 +77,21 @@ body {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 0;
-  right: 0;
+  left: 25%;
+  right: 15%;
+  width: 500px;
+  height: 250px;
+  margin: auto;
+  text-align: center;
+}
+
+.box-btn-dice-txt{
+  display: flex;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 25%;
+  right: 10%;
   width: 500px;
   height: 250px;
   margin: auto;
@@ -91,15 +104,17 @@ body {
 
 .btnDice {
   cursor: pointer;
-  padding: 50px 0;
-  width: 200px;
-  height: 100px;
+  padding: 20px 0;
+  width: 250px;
+  height: 20px;
   background: #339535;
-  border-radius: 100%;
+  border-radius: 20pt;
   color: #fff;
-  font-size: 40px;
+  font-size: 20px;
   text-align: center;
   font-weight: bold;
+  line-height: 20px;
+  margin-top: 30%;
 }
 
 img.user {
@@ -290,7 +305,7 @@ img.user {
 /**
 주사위 굴리기
 **/
-#diceBox { max-width: 600px; width: 90vw; height: auto; background-color: transparent; border-radius: 10px; padding: 40px; box-sizing: border-box; }
+#diceBox { max-width: 600px; width: 90vw; height: auto; background-color: transparent; border-radius: 10px; padding: 40px; box-sizing: border-box; margin-top: -30%;}
 #diceBox > .dice_wrap { width: 100%; height: auto; display: flex; margin-bottom: 20px;}
 #diceBox > .dice_wrap > [class^=dice]:last-of-type {margin-right: 0px;}
 /* 주사위 만들기 */
