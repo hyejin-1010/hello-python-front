@@ -1,3 +1,9 @@
+header {
+  height: 65px;
+  margin: 0;
+  background: #3AA73D;
+}
+
 body {
   margin: 0;
   background: #FBFCF4;

@@ -13,7 +13,7 @@
         <span>헬로파이썬</span>
       </div>
 
-      <div class="blank"></div>
+      <div class="navbar-blank"></div>
       <div class="btn" id="rankingBtn"><span>랭킹 확인하기</span></div> 
       <div class="btn" id="myPageBtn"><span>마이페이지</span></div> 
       <div class="btn" id="logoutBtn"><span>로그아웃</span></div> 
@@ -83,12 +83,12 @@
         dialog = document.getElementById('navbarDialog')
         dialog.style.display = 'flex'
       
-      def closeDialog (args) : 
+      def closeNavbarDialog (args) : 
         dialog = document.getElementById('navbarDialog')
         dialog.style.display = 'none'
 
       closeDialogBtn = document.getElementById('closeDialogBtn')
-      closeDialogBtn.addEventListener('click', ffi.create_proxy(closeDialog))
+      closeDialogBtn.addEventListener('click', ffi.create_proxy(closeNavbarDialog))
 
       logoutBtn = document.getElementById('logoutBtn')
       logoutBtn.addEventListener('click', ffi.create_proxy(doLogout))
