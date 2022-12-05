@@ -4,39 +4,18 @@
     <link rel="stylesheet" href="./Main.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
-    <style>
-      .upLine {
-        width: 8px;
-        height: 143px;
-        background-color: #FAC17F;
-        transform: rotate(30deg);
-        position: absolute;
-        margin-top: -123px;
-        margin-left: 142px;
-      }
-      .downLine{
-        width: 8px;
-        height: 143px;
-        background-color: #FAC17F;
-        transform: rotate(-30deg);
-        position: absolute;
-        margin-top: 123px;
-        margin-left: 155px;
-      }
-    </style>
+    <script src="http://code.jquery.com/jquery-1.6.4.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      $(function () {
+        $.get("../../components/Navbar/Navbar.html", function (data) {
+          $("#navbarBox").append(data);
+        });
+      });
+    </script>
   </head>
   <body>
     <header>
-      <div class="navbar">
-        <div class="logo" id="logo">
-          <span>헬로파이썬</span>
-        </div>
-  
-        <div class="blank"></div>
-        <div class="btn" id="rankingBtn"><span>랭킹 확인하기</span></div> 
-        <div class="btn" id="myPageBtn"><span>마이페이지</span></div> 
-        <div class="btn" id="logoutBtn"><span>로그아웃</span></div> 
-      </div>
+      <div id="navbarBox"></div>
     </header>    
     <div class="main">
       <div class="box">
@@ -49,7 +28,6 @@
             <span id="closeDialogBtn" class="btn-close">X</span>
           </div>
           <div class="line"></div>
-          <!-- TODO: 한비님이 작업해주세용 !! -->
           <div class="header" id="header">
             <div class="title" id="title">RANK</div>
           </div>
@@ -96,10 +74,24 @@
       import asyncio
       import json
 
-      # 랭킹 확인하기 버튼 클릭시 호출되는 함수
-      async def ViewRanking(args):
-        response = await pyfetch(url="http://127.0.0.1:5001/Ranking", method="GET")
+      lectures = []
+
+      # 데이터 가져오기
+      async def getLectures () :
+        global lectures
+
+        response = await pyfetch(url='http://127.0.0.1:5001/learningDatas/{}'.format(1), method="GET")
         response_dict = await response.json()
+        data = response_dict['data']
+        lectureKeys = data.keys()
+
+        lectures = []
+
+        # TODO: 현재는 모든 Lecture가 오기 때문에 프론트에서 Filtering 해준다.
+        for lectureKey in lectureKeys :
+          lecture = data[lectureKey]
+          if 'classID' in data[lectureKey] and data[lectureKey]['classID'] == '1' :
+            lectures.append(data[lectureKey])
 
       doneLectures = localStorage.getItem('doneLectures') or []
 
@@ -113,74 +105,54 @@
               location.href = '/views/Study/Study.html?no={}'.format(circleNo + 1)
             break
 
-      for i in range(6) :
-        isDice = i == 5
-        circleId = 'circle_item_{}'.format(i)
-        lectureDiv = document.createElement('div')
-        lineDiv = document.createElement('div')
+      def drawCircles () :
+        for i in range(len(lectures) + 1) :
+          isDice = i == len(lectures)
+          circleId = 'circle_item_{}'.format(i)
+          lectureDiv = document.createElement('div')
+          lineDiv = document.createElement('div')
+        
+          # circle 별 class 적용 (index의 짝홀수 여부에 따라 상단/하단 위치에 할 수 있도록 class 적용)
+          if isDice :
+            lectureDiv.className = 'circle circle-odd circle-dice'
+
+          elif i % 2 == 0 :
+            lectureDiv.className = 'circle circle-even'
+            lineDiv.className ='upLine'
       
-        # circle 별 class 적용 (index의 짝홀수 여부에 따라 상단/하단 위치에 할 수 있도록 class 적용)
-        if isDice :
-          lectureDiv.className = 'circle circle-odd circle-dice'
+          else :
+            lectureDiv.className = 'circle circle-odd'
+            lineDiv.className = 'downLine'
+        
 
-        elif i % 2 == 0 :
-          lectureDiv.className = 'circle circle-even'
-          lineDiv.className ='upLine'
-     
-        else :
-          lectureDiv.className = 'circle circle-odd'
-          lineDiv.className = 'downLine'
-      
+          if '{}'.format(i + 1) in doneLectures :
+            lectureDiv.className += ' done-circle'
 
-        if '{}'.format(i + 1) in doneLectures :
-          lectureDiv.className += ' done-circle'
+          lectureDiv.setAttribute('id', circleId)
+          lectureDiv.setAttribute('index', i)
 
-        lectureDiv.setAttribute('id', circleId)
-        lectureDiv.setAttribute('index', i)
+          lineDiv.setAttribute('id', circleId)
 
-        lineDiv.setAttribute('id', circleId)
+          # circle 내 내부 텍스트 생성 
+          lectureSpan = document.createElement('span')
+          if isDice :
+            diceImg = document.createElement('img')
+            diceImg.src = '../../images/dice.png'
+            lectureSpan.appendChild(diceImg)
+          else :
+            lectureSpan.appendChild(document.createTextNode(i + 1))
 
-        # circle 내 내부 텍스트 생성 
-        lectureSpan = document.createElement('span')
-        if isDice :
-          diceImg = document.createElement('img')
-          diceImg.src = '../../images/dice.png'
-          lectureSpan.appendChild(diceImg)
-        else :
-          lectureSpan.appendChild(document.createTextNode(i + 1))
+          lectureDiv.appendChild(lectureSpan)
+          lectureDiv.appendChild(lineDiv)
+          document.getElementById('box-circles').append(lectureDiv)
 
-        lectureDiv.appendChild(lectureSpan)
-        lectureDiv.appendChild(lineDiv)
-        document.getElementById('box-circles').append(lectureDiv)
+          lectureDiv.addEventListener('click', ffi.create_proxy(onClickCircle))
 
-        lectureDiv.addEventListener('click', ffi.create_proxy(onClickCircle))
+      async def initialize () :
+        await getLectures()
+        drawCircles()
 
-      def showRankingDialog (args) :
-        dialog = document.getElementById('dialog')
-        dialog.style.display = 'flex'
-
-      def closeDialog (args) : 
-        dialog = document.getElementById('dialog')
-        dialog.style.display = 'none'
-
-      def goToMyPage (args) :
-        location.href = '/views/MyPage/MyPage.html'
-
-      def doLogout (args) :
-        localStorage.setItem('hp-user', None)
-        location.href = '/views/Login/Login.html'
-
-      rankingBtn = document.getElementById('rankingBtn')
-      rankingBtn.addEventListener('click', ffi.create_proxy(showRankingDialog))
-
-      closeDialogBtn = document.getElementById('closeDialogBtn')
-      closeDialogBtn.addEventListener('click', ffi.create_proxy(closeDialog))
-
-      myPageBtn = document.getElementById('myPageBtn')
-      myPageBtn.addEventListener('click', ffi.create_proxy(goToMyPage))
-
-      logoutBtn = document.getElementById('logoutBtn')
-      logoutBtn.addEventListener('click', ffi.create_proxy(doLogout))
+      initialize()
     </py-script>
   </body>
 </html>

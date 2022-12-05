@@ -6,25 +6,52 @@
     <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
   </head>
   <body>
-    <div class="wrap">
+    <div class="navbar">
       <div class="logo" id="logo">
         <span>헬로파이썬</span>
       </div>
 
       <div class="blank"></div>
-      <div class="btn"><span>랭킹 확인하기</span></div> 
-      <div class="btn"><span>마이페이지</span></div> 
+      <div class="btn" id="rankingBtn"><span>랭킹 확인하기</span></div> 
+      <div class="btn" id="myPageBtn"><span>마이페이지</span></div> 
+      <div class="btn" id="logoutBtn"><span>로그아웃</span></div> 
     </div>
 
     <py-script>
-      from js import document, location
       from pyodide import ffi
-      
-      def onClickLogo (args) :
-        location.href = '/views/Main/Main.html'
+      from js import document, location
 
-      logo = document.getElementById('logo')
-      logo.addEventListener('click', ffi.create_proxy(onClickLogo))
+      # 랭킹 확인하기 버튼 클릭시 호출되는 함수
+      async def ViewRanking(args):
+        response = await pyfetch(url="http://127.0.0.1:5001/Ranking", method="GET")
+        response_dict = await response.json()
+
+      def doLogout (args) :
+        localStorage.setItem('hp-user', None)
+        location.href = '/views/Login/Login.html'
+
+      def goToMyPage (args) :
+        location.href = '/views/MyPage/MyPage.html'
+
+      def showRankingDialog (args) :
+        dialog = document.getElementById('dialog')
+        dialog.style.display = 'flex'
+      
+      def closeDialog (args) : 
+        dialog = document.getElementById('dialog')
+        dialog.style.display = 'none'
+
+      closeDialogBtn = document.getElementById('closeDialogBtn')
+      closeDialogBtn.addEventListener('click', ffi.create_proxy(closeDialog))
+
+      logoutBtn = document.getElementById('logoutBtn')
+      logoutBtn.addEventListener('click', ffi.create_proxy(doLogout))
+
+      rankingBtn = document.getElementById('rankingBtn')
+      rankingBtn.addEventListener('click', ffi.create_proxy(showRankingDialog))
+
+      myPageBtn = document.getElementById('myPageBtn')
+      myPageBtn.addEventListener('click', ffi.create_proxy(goToMyPage))
     </py-script>
   </body>
 </html>

@@ -225,3 +225,22 @@ header {
   font-size: 18px;
   font-weight: bold;
 }
+
+.upLine {
+  width: 8px;
+  height: 143px;
+  background-color: #FAC17F;
+  transform: rotate(30deg);
+  position: absolute;
+  margin-top: -123px;
+  margin-left: 142px;
+}
+.downLine{
+  width: 8px;
+  height: 143px;
+  background-color: #FAC17F;
+  transform: rotate(-30deg);
+  position: absolute;
+  margin-top: 123px;
+  margin-left: 155px;
+}
