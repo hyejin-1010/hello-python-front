@@ -1,7 +1,9 @@
 <html>
   <head>
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <!--
     <link rel="stylesheet" href="./Navbar.css" />
+    -->
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
   </head>
@@ -15,6 +17,50 @@
       <div class="btn" id="rankingBtn"><span>랭킹 확인하기</span></div> 
       <div class="btn" id="myPageBtn"><span>마이페이지</span></div> 
       <div class="btn" id="logoutBtn"><span>로그아웃</span></div> 
+    </div>
+
+    <div class="dialog-navbar" id="navbarDialog">
+      <div class="ranking-content navbar-dialog-content" id="rankingContent">
+        <div class="dialog-header">
+          <span id="closeDialogBtn" class="btn-close">X</span>
+        </div>
+        <div class="line"></div>
+        <div class="header" id="header">
+          <div class="title" id="title">RANK</div>
+        </div>
+       
+        <ul class="rank_wrap">
+          <li class="rank_item">
+            <div class="rank_item_wrap">
+              <span class="rank_number">1</span>
+              <span class="rank_nickname" style=margin-left:5px;>Nickname_1</span>
+            </div>
+            <span class="rank_point">125 point</span>
+          </li>
+          <li class="rank_item">
+            <div class="rank_item_wrap">
+              <span class="rank_number">2</span>
+              <span class="rank_nickname">Nickname_2</span>
+            </div>
+            <span class="rank_point">95 point</span>
+          </li>
+          <li class="rank_item">
+            <div class="rank_item_wrap">
+              <span class="rank_number">3</span>
+              <span class="rank_nickname">Nickname_3</span>
+            </div>
+            <span class="rank_point">85 point</span>
+          </li>
+          <li class="rank_item">
+            <div class="rank_item_wrap">
+              <span class="rank_number">4</span>
+              <span class="rank_nickname">Nickname_4</span>
+            </div>
+            <span class="rank_point">25 point</span>
+          </li>
+        </ul>
+        </div>
+      </div>
     </div>
 
     <py-script>
@@ -34,11 +80,11 @@
         location.href = '/views/MyPage/MyPage.html'
 
       def showRankingDialog (args) :
-        dialog = document.getElementById('dialog')
+        dialog = document.getElementById('navbarDialog')
         dialog.style.display = 'flex'
       
       def closeDialog (args) : 
-        dialog = document.getElementById('dialog')
+        dialog = document.getElementById('navbarDialog')
         dialog.style.display = 'none'
 
       closeDialogBtn = document.getElementById('closeDialogBtn')
