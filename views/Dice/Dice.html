@@ -147,11 +147,11 @@
         { 'title': '반복문을 즉시 탈출하고자 할때 쓰는 함수명은 무엇일까요?', 'answer': 3, 'type': 'selection', 'selections': ['str', 'while', 'break',' else'], 'commentary': '반복문을 즉시 탈출하고자할땐 break를 사용해요!<br/>str은 문자형 데이터 타입을 나타낼 때 쓰이고, while은 반복문에 해당해요!<br/>else는 조건문(if문)에서 함께 쓰인답니다!' },
         { 'title': '비교연산자 X > Y 설명으로 옳은것은?', 'answer': 2, 'type': 'selection', 'selections': ['X와 Y가 서로 같을때 참(True)이다.', 'X가 Y보다 클 때 참(True)이다.', 'X와 Y가 서로 다를때 참(True)이다.', 'X가 Y보다 작을 때 참(True)이다.'], 'commentary': '비교연산자 ‘X > Y’는 X > Y가 클 경우 참이라는 뜻을 가지고 있어요!' },
         { 'title': 'for문과 while문 둘은 반복문이지만 아래와 같은 차이점이 있다.<br/>맞으면 O, 틀리면 X', 'content': 'for문은 반복횟수가 정해진 경우, while문은 특정 조건이 만족할 때까지 수행하는 경우에 사용된다.', 'type': 'OX', 'answer': 'O', 'commentary': 'for문과 while의 가장 큰 특징으로는 for문은 반복횟수가 정해져 있으나 while문은 반복할 횟수가 정확하게 정해져 있지 않아요! 그래서 while문은 True를 입력해 통해 조건이 만족할 때까지 계속적으로 반복할 수 있답니다!' },
-        { 'title': "‘숫자’가 0~9까지 출력되도록 코드 작성, 반복문 while 사용", 'content': '숫자 = 0 (변수)<br/><br/>[	빈	칸	]<br/>&nbsp; &nbsp; &nbsp; &nbsp; print(숫자) 	(변수 ‘숫자’ 출력)<br/>&nbsp; &nbsp; &nbsp; &nbsp; 숫자 = 숫자 +1 	(while문을 한번 반복 시 변수 ‘숫자’  +1 증가)', 'type': 'input', 'answer': "while 숫자 &lt; 10 :", 'commentary': '문제에서 주어진 조건이 0~9까지이니 [while 숫자 &lt; 10 :] 또는 [while 숫자 &lt;= 9 :] 를 작성하면 되요!' },
+        { 'title': 'for문과 while문 둘은 반복문이지만 아래와 같은 차이점이 있다.<br/>맞으면 O, 틀리면 X', 'content': 'for문은 반복횟수가 정해진 경우, while문은 특정 조건이 만족할 때까지 수행하는 경우에 사용된다.', 'type': 'OX', 'answer': 'O', 'commentary': 'for문과 while의 가장 큰 특징으로는 for문은 반복횟수가 정해져 있으나 while문은 반복할 횟수가 정확하게 정해져 있지 않아요! 그래서 while문은 True를 입력해 통해 조건이 만족할 때까지 계속적으로 반복할 수 있답니다!' },
         { 'title': '예약어 continue 에 대한 설명으로 옳은 것은?', 'type': 'selection', 'answer': 2, 'selections': ['특정조건에서 반복문을 멈추고싶을때 이용한다.', '특정조건에서 작동을 수행하지않고 넘어가고싶을때 이용한다.', '특정변수의 크기를 비교할때 사용한다.', '반복문에서 필수적으로 적어야하는 예약어이다.'], 'commentary': 'continue는 break와 같이 반복문에서 사용하지만 ‘break’는 반복문을 탈출할 때에 쓰고, ‘continue’는 코드를 실행하지 않고 넘기고 싶을 때에 사용해요!' },
         { 'title': '논리연산자의 종류로 옳은 것은?', 'type': 'selection', 'answer': 3, 'selections': ['>', '>=', 'and', '&lt;'], 'commentary': '논리연산자의 종류에는 “and”, “or”, “not”이 있어요. <br/> > 또는 &lt;=와 같은 등호는 비교연산자에 해당해요!' },
         { 'title': '변수 A와 B를 사용해서 두 값을 더한 값을 화면에 출력해보세요.', 'content': 'a=10<br/>b=15', 'type': 'input', 'answer': 'print(a+b)', 'commentary': '출력함수인 print를 사용해서 print(a+b)를 출력하면 화면에 25가 출력되요!' },
-        { 'title': 'while문을 사용해  6번 반복하는 코드를 작성해보세요.', 'type': 'input', 'answer': 'while >= 6:', 'commentary': 'while문은 기본적으로 [while 조건:] 형식으로 쓰이기 때문에, while >=6 또는 while >7를 입력해서 작성하면 되요!' }
+        { 'title': '변수 A와 B를 사용해서 두 값을 더한 값을 화면에 출력해보세요.', 'content': 'a=10<br/>b=15', 'type': 'input', 'answer': 'print(a+b)', 'commentary': '출력함수인 print를 사용해서 print(a+b)를 출력하면 화면에 25가 출력되요!' },
       ]
 
       '''
@@ -264,7 +264,7 @@
         user1Value += randomValue
 
         # user 1p가 완주했을 경우 
-        if user1Value >= 21 :
+        if user1Value >= 22 :
           user1Value = 0 
           await asyncio.sleep(0.7)
           drawUser()
@@ -282,7 +282,8 @@
           user2Value += getRandomDiceNumber()
 
         # user 2p가 완주했을 경우 
-        if user2Value >= 21 :
+        if user2Value >= 22 :
+          user2Value = 0
           drawUser()
           await asyncio.sleep(0.7)
           alert('패배했습니다.')
