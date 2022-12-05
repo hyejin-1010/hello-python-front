@@ -56,6 +56,10 @@ body {
 
 .btn-signUp:hover {
   background: #267427;
+  border-top: 2px solid #266e27; 
+  border-bottom: 2px solid #266e27;
+  border-left: 2px solid #266e27; 
+  border-right: 2px solid #266e27;
 }
 
 .btn-check-id {
