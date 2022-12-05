@@ -55,17 +55,19 @@
       def onClickCircle (args) :
         for i in range(len(args.path)) :
           if 'circle' in args.path[i].id :
-            circleNo = int(args.path[i].id[len(args.path[i].id) - 1])
-            if circleNo == 5 :
+            circleNo = args.path[i].id[len('circle_item_') : ]
+            if circleNo == '5' :
               location.href = '/views/Dice/Dice.html'
-            else :
-              location.href = '/views/Study/Study.html?no={}'.format(circleNo + 1)
+            else : 
+              location.href = '/views/Study/Study.html?no={}'.format(circleNo)
             break
 
       def drawCircles () :
         for i in range(len(lectures) + 1) :
           isDice = i == len(lectures)
           circleId = 'circle_item_{}'.format(i)
+          if isDice == False :
+            circleId = 'circle_item_{}'.format(lectures[i]['learningID'])
           lectureDiv = document.createElement('div')
           lineDiv = document.createElement('div')
         

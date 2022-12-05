@@ -2,18 +2,27 @@
   <head>
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <link rel="stylesheet" href="./Study.css" />
+    <link rel="stylesheet" href="../../styles/Navbar.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
+    <script src="http://code.jquery.com/jquery-1.6.4.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      $(function () {
+        $.get("../../components/Navbar/Navbar.html", function (data) {
+          $("#navbarBox").append(data);
+        });
+      });
+    </script>
   </head>
   <body>
     <header>
-      <object type="text/html" data="../../components/Navbar/Navbar.html" class="navbar"></object>  
+      <div id="navbarBox"></div>
     </header>
 
     <div class="main">
       <div class="box">
         <div class="header">
-          <div class="title" id="title"></div>
+          <div class="title" id="titleDiv"></div>
           <button class="btn-next" id="nextBtn">다음</button>
         </div>
         <video id="studyVideo" controls></video>
@@ -23,27 +32,33 @@
     <py-script>
       from js import document, location 
       from pyodide import ffi
+      from pyodide.http import pyfetch
 
       queries = location.href.split('?')[1]
-      no = queries[len(queries) - 1]
-      videoFilePath = '/videos/video_1_{}.mp4'.format(no)
+      no = queries[len('no=') : ]
 
-      titles = ['파이썬 설치 및 소개', '변수 및 자료형', '입출력', '조건문', '반복문']
-      titleDiv = document.getElementById('title')
-      titleDiv.innerHTML = titles[int(no) - 1]
+      async def initialize () :
+        global no
+        response = await pyfetch(url='http://127.0.0.1:5001/LearningData/{}'.format(no), method="GET")
+        response_dict = await response.json()
+        learning = response_dict['data']
 
-      videoTag = document.getElementById('studyVideo')
-      source = document.createElement('source')
+        # init title, video
+        titleDiv = document.getElementById('titleDiv')
+        titleDiv.innerHTML = learning['Title']
 
-      source.setAttribute('src', videoFilePath)
-      source.setAttribute('type', 'video/mp4')
-
-      videoTag.appendChild(source)
+        videoTag = document.getElementById('studyVideo')
+        source = document.createElement('source')
+        source.setAttribute('src', '/videos/{}.mp4'.format(learning['video']))
+        source.setAttribute('type', 'video/mp4')
+        videoTag.appendChild(source)
 
       def doNext (args) :
         location.href = '/views/PointGame/PointGame.html?no={}'.format(no)
       nextBtnProxy = ffi.create_proxy(doNext)
       document.getElementById('nextBtn').addEventListener('click', nextBtnProxy)
+
+      initialize()
     </py-script>
   </body>
 </html>
