@@ -38,20 +38,28 @@ video {
 .header .title {
   flex: 1;
   text-align: left;
-  color: #339535;
+  color: #3AA73D;
   font-weight: bold;
   font-size: 30px;
 }
 
 .btn-next {
   padding: 5px 15px;
-  background: #339535;
+  background: #3AA73D;
   border-radius: 10px;
   color: #ffffff;
   font-weight: bold;
   font-size: 22px;
+  border-top: 2px solid #3AA73D; 
+  border-bottom: 2px solid #3AA73D;
+  border-left: 2px solid #3AA73D; 
+  border-right: 2px solid #3AA73D;
 }
 
 .btn-next:hover {
   background: #267427;
+  border-top: 2px solid #266e27; 
+  border-bottom: 2px solid #266e27;
+  border-left: 2px solid #266e27; 
+  border-right: 2px solid #266e27;
 }

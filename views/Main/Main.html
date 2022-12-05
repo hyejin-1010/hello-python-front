@@ -4,12 +4,29 @@
     <link rel="stylesheet" href="./Main.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
+    <style>
+      .upLine {
+        width: 8px;
+        height: 143px;
+        background-color: #FAC17F;
+        transform: rotate(30deg);
+        position: absolute;
+        margin-top: -123px;
+        margin-left: 142px;
+      }
+      .downLine{
+        width: 8px;
+        height: 143px;
+        background-color: #FAC17F;
+        transform: rotate(-30deg);
+        position: absolute;
+        margin-top: 123px;
+        margin-left: 155px;
+      }
+    </style>
   </head>
   <body>
     <header>
-      <!--
-      <object type="text/html" data="../../components/Navbar/Navbar.html" class="navbar"></object>  
-      -->
       <div class="navbar">
         <div class="logo" id="logo">
           <span>헬로파이썬</span>
@@ -19,12 +36,10 @@
         <div class="btn" id="rankingBtn"><span>랭킹 확인하기</span></div> 
         <div class="btn" id="myPageBtn"><span>마이페이지</span></div> 
       </div>
-    </header>
-
+    </header>    
     <div class="main">
       <div class="box">
-        <div class="box-circles" id="box-circles">
-        </div>
+        <div class="box-circles" id="box-circles"></div>
       </div>
 
       <div class="dialog" id="dialog">
@@ -32,9 +47,43 @@
           <div class="dialog-header">
             <span id="closeDialogBtn" class="btn-close">X</span>
           </div>
-
+          <div class="line"></div>
           <!-- TODO: 한비님이 작업해주세용 !! -->
-          Ranking 확인하기 ... 
+          <div class="header" id="header">
+            <div class="title" id="title">RANK</div>
+          </div>
+         
+          <ul class="rank_wrap">
+            <li class="rank_item">
+              <div class="rank_item_wrap">
+                <span class="rank_number">1</span>
+                <span class="rank_nickname" style=margin-left:5px;>Nickname_1</span>
+              </div>
+              <span class="rank_point">125 point</span>
+            </li>
+            <li class="rank_item">
+              <div class="rank_item_wrap">
+                <span class="rank_number">2</span>
+                <span class="rank_nickname">Nickname_2</span>
+              </div>
+              <span class="rank_point">95 point</span>
+            </li>
+            <li class="rank_item">
+              <div class="rank_item_wrap">
+                <span class="rank_number">3</span>
+                <span class="rank_nickname">Nickname_3</span>
+              </div>
+              <span class="rank_point">85 point</span>
+            </li>
+            <li class="rank_item">
+              <div class="rank_item_wrap">
+                <span class="rank_number">4</span>
+                <span class="rank_nickname">Nickname_4</span>
+              </div>
+              <span class="rank_point">25 point</span>
+            </li>
+          </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -42,6 +91,14 @@
     <py-script>
       from js import document, location, localStorage
       from pyodide import ffi
+      from pyodide.http import pyfetch
+      import asyncio
+      import json
+
+      # 랭킹 확인하기 버튼 클릭시 호출되는 함수
+      async def ViewRanking(args):
+        response = await pyfetch(url="http://127.0.0.1:5001/Ranking", method="GET")
+        response_dict = await response.json()
 
       doneLectures = localStorage.getItem('doneLectures') or []
 
@@ -59,14 +116,20 @@
         isDice = i == 5
         circleId = 'circle_item_{}'.format(i)
         lectureDiv = document.createElement('div')
-
+        lineDiv = document.createElement('div')
+      
         # circle 별 class 적용 (index의 짝홀수 여부에 따라 상단/하단 위치에 할 수 있도록 class 적용)
         if isDice :
           lectureDiv.className = 'circle circle-odd circle-dice'
+
         elif i % 2 == 0 :
           lectureDiv.className = 'circle circle-even'
+          lineDiv.className ='upLine'
+     
         else :
           lectureDiv.className = 'circle circle-odd'
+          lineDiv.className = 'downLine'
+      
 
         if '{}'.format(i + 1) in doneLectures :
           lectureDiv.className += ' done-circle'
@@ -74,16 +137,19 @@
         lectureDiv.setAttribute('id', circleId)
         lectureDiv.setAttribute('index', i)
 
+        lineDiv.setAttribute('id', circleId)
+
         # circle 내 내부 텍스트 생성 
         lectureSpan = document.createElement('span')
         if isDice :
           diceImg = document.createElement('img')
-          diceImg.src = '/images/dice.png'
+          diceImg.src = '../../images/dice.png'
           lectureSpan.appendChild(diceImg)
         else :
           lectureSpan.appendChild(document.createTextNode(i + 1))
 
         lectureDiv.appendChild(lectureSpan)
+        lectureDiv.appendChild(lineDiv)
         document.getElementById('box-circles').append(lectureDiv)
 
         lectureDiv.addEventListener('click', ffi.create_proxy(onClickCircle))

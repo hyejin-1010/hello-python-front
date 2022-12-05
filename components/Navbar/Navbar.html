@@ -17,16 +17,14 @@
     </div>
 
     <py-script>
-      '''
       from js import document, location
       from pyodide import ffi
       
       def onClickLogo (args) :
-        # location.href = '/views/Main/Main.html'
+        location.href = '/views/Main/Main.html'
 
       logo = document.getElementById('logo')
       logo.addEventListener('click', ffi.create_proxy(onClickLogo))
-      '''
     </py-script>
   </body>
 </html>

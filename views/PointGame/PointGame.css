@@ -60,13 +60,13 @@ body {
 }
 
 .title, .step {
-  color: #339535;
+  color: #3AA73D;
   font-size: 28px;
   font-weight: bold;
 }
 
 .sub-title {
-  color: #339535;
+  color: #3AA73D;
   font-size: 22px; 
   font-weight: 500;
 }
@@ -137,6 +137,10 @@ body {
 
 .selection:hover .no {
   background: #266e27;
+  border-top: 2px solid #266e27; 
+  border-bottom: 2px solid #266e27;
+  border-left: 2px solid #266e27; 
+  border-right: 2px solid #266e27;
 }
 
 .selection .no {
@@ -145,7 +149,7 @@ body {
   margin-right: 15px;
   width: 50px;
   height: 50px;
-  background: #339535;
+  background: #3AA73D;
   border-radius: 100%;
 }
 
@@ -229,7 +233,7 @@ body {
 .hint-title {
   margin-bottom: 15px;
   font-size: 32px;
-  color: #339535;
+  color: #3AA73D;
   font-weight: bold;
 }
 
@@ -278,7 +282,7 @@ body {
 
 .btn-done-result {
   padding: 5px 25px;
-  background: #339535;
+  background: #3AA73D;
   border-radius: 5px;
   font-weight: bold;
   font-size: 24px;
