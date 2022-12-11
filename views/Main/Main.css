@@ -50,7 +50,15 @@ body {
   margin: auto;
   color: #fff;
   font-weight: bold;
-  font-size: 80px;
+  font-size: 80px
+}
+
+.circle > span:hover {
+  display: none;
+}
+
+.circle > span#lectureTxt {
+  display: none;
 }
 
 .circle img {

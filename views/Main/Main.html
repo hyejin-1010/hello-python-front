@@ -101,6 +101,7 @@
         response_dict = await response.json()
 
       doneLectures = localStorage.getItem('doneLectures') or []
+      titles = ['파이썬 설치 및 소개', '변수 및 자료형', '입출력', '조건문', '반복문', '주사위 게임']
 
       def onClickCircle (args) :
         for i in range(len(args.path)) :
@@ -141,14 +142,22 @@
 
         # circle 내 내부 텍스트 생성 
         lectureSpan = document.createElement('span')
+        lectureSpanTxt = document.createElement('span')
         if isDice :
           diceImg = document.createElement('img')
           diceImg.src = '../../images/dice.png'
           lectureSpan.appendChild(diceImg)
         else :
+          lectureSpan.setAttribute('id', 'lectureNo')
+          lectureSpanTxt.setAttribute('id', 'lectureTxt')
+          ##lectureSpanTxt.setAttribute('style','display: none')
+          lectureSpanTxt.appendChild(document.createTextNode(titles[i]))
           lectureSpan.appendChild(document.createTextNode(i + 1))
+        
+        
 
         lectureDiv.appendChild(lectureSpan)
+        lectureDiv.appendChild(lectureSpanTxt)
         lectureDiv.appendChild(lineDiv)
         document.getElementById('box-circles').append(lectureDiv)
 
