@@ -1,0 +1,250 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <link rel="stylesheet" href="./Learning.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
+  </head>
+  <body>
+    <div class="wrap">
+      <!-- Sidebar -->
+      <div class="sidebar">
+      </div>
+
+      <div class="main">
+        <div class="box-table">
+          <table>
+            <thead>
+              <tr>
+                <th>learningID</th>
+                <th>Title</th>
+                <th>classID</th>
+                <th>order</th>
+              </tr>
+            </thead>
+            <tbody id="tableBodyId">
+            </tbody>
+          </table>
+
+          <div class="table-buttons">
+            <button id="addButton" class="btn-add">생성</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialog" id="dialog">
+      <div class="dialog-content" id="dialogContent">
+        <div class="buttons">
+          <button id="deleteItemBtn" class="btn-delete">삭제</button>
+          <button id="updateItemBtn" class="btn-update">수정</button>
+          <button id="createItemBtn" class="btn-create">생성</button>
+          <button id="cancelItemBtn" class="btn-cancel">취소</button>
+        </div>
+
+        <div class="content">
+          <!-- # TODO: {'Title': '파이썬 설치 및 소개', 'classID': '1', 'learningID': '1-1', 
+            'order': 0, 'pointGameIDs': ['1', '2', '3'], 'video': 'video_1_1'} -->
+
+          <div class="box-input">
+            <div class="box-label">Title</div>
+            <div class="input">
+              <input type="text" placeholder="타이틀을 입력해주세요" id="input_Title" />
+            </div>
+          </div>
+
+          <div class="box-input">
+            <div class="box-label">classID</div>
+            <div class="input">
+              <input type="text" placeholder="Class ID 입력해주세요" id="input_classID" />
+            </div>
+          </div>
+
+          <div class="box-input">
+            <div class="box-label">learningID</div>
+            <div class="input">
+              <input type="text" placeholder="ID를 입력해주세요" id="input_learningID" />
+            </div>
+          </div>
+
+          <div class="box-input">
+            <div class="box-label">order</div>
+            <div class="input">
+              <input type="number" placeholder="Order를 입력해주세요" id="input_order" />
+            </div>
+          </div>
+
+          <div class="box-input">
+            <div class="box-label">pointGameIDs</div>
+            <div class="input">
+              <input type="text" placeholder="pointGameIDs를 입력해주세요" id="input_pointGameIDs" />
+            </div>
+          </div>
+
+          <div class="box-input">
+            <div class="box-label">video</div>
+            <div class="input">
+              <input type="text" placeholder="영상을 입력해주세요" id="input_video" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <py-script>
+      from js import document, location, alert, localStorage, confirm
+      from pyodide import ffi
+      from pyodide.http import pyfetch
+      import asyncio
+      import json
+      import ast
+
+      items = []
+      selectedItem = None
+
+      def addTableFields (trEl, item) : 
+        for itemKey in ['learningID', 'Title', 'classID', 'order'] :
+          tdEl = document.createElement('td')
+          if itemKey in item :
+            tdEl.appendChild(document.createTextNode(item[itemKey]))
+          trEl.appendChild(tdEl)
+
+      def addItem (item) :
+        trEl = document.createElement('tr')
+        addTableFields(trEl, item)
+        trEl.setAttribute('id', 'learning_tr_{}'.format(item['learningID']))
+        trEl.addEventListener('click', ffi.create_proxy(onClickItem))
+        document.getElementById('tableBodyId').append(trEl)
+
+      def getInput () :
+        input = {}
+        for itemKey in ['Title', 'classID', 'learningID', 'video'] :
+          input[itemKey] = Element('input_{}'.format(itemKey)).element.value
+        order = Element('input_order').element.value
+        if order != "" :
+          input['order'] = int(order)
+        pointGameIDs = Element('input_pointGameIDs').element.value
+        if pointGameIDs != "" :
+          input['pointGameIDs'] = ast.literal_eval(pointGameIDs)
+        return input
+
+      async def onClickCreateBtn (args) :
+        global items
+        input = getInput()
+
+        response = await pyfetch(url="http://127.0.0.1:5001/admin_LearningData/add", method="POST", body=json.dumps(input))
+        response_dict = await response.json()
+        if response_dict['success'] == False :
+          alert('생성에 실패했습니다')
+        else :
+          item = response_dict['data']
+          items = list(items)
+          items.append(item)
+          addItem(item)
+          closeDialog(None)
+
+      async def onClickUpdateBtn (args) :
+        global items, selectedItem
+        items = list(items)
+        input = getInput()
+        findIndex = items.index(selectedItem)
+
+        response = await pyfetch(url="http://127.0.0.1:5001/admin_LearningData/edit", method="POST", body=json.dumps(input))
+        response_dict = await response.json()
+        if response_dict['success'] == False :
+          alert('수정에 실패했습니다')
+        else :
+          item = response_dict['data']
+          items[findIndex] = item
+          el = document.getElementById('learning_tr_{}'.format(item['learningID']));
+          el.innerHTML = ""
+          addTableFields(el, item)
+          closeDialog(None)
+
+      async def onClickDeleteBtn (args) :
+        global selectedItem, items
+        result = confirm('정말 삭제하시겠습니까?')
+        if result == True :
+          response = await pyfetch(url="http://127.0.0.1:5001/admin_LearningData/delete", method="POST", body=json.dumps({ 'learningID': selectedItem['learningID'] }))
+          response_dict = await response.json()
+          if response_dict['success'] == False :
+            alert('삭제에 실패했습니다')
+          else :
+            items = list(items)
+            items.remove(selectedItem)
+            document.getElementById('learning_tr_{}'.format(selectedItem['learningID'])).remove();
+            closeDialog(None)
+
+      def closeDialog (args) :
+        dialog = document.getElementById('dialog')
+        dialog.style.display = 'none'
+
+      def showDialog () :
+        dialog = document.getElementById('dialog')
+        dialog.style.display = 'flex'
+
+      def showDetailView () :
+        global selectedItem
+        for itemKey in ['Title', 'classID', 'learningID', 'order', 'pointGameIDs', 'video'] :
+          if itemKey in selectedItem :
+            Element('input_{}'.format(itemKey)).element.value = selectedItem[itemKey]
+        deleteItemBtn = document.getElementById('deleteItemBtn')
+        updateItemBtn = document.getElementById('updateItemBtn')
+        createItemBtn = document.getElementById('createItemBtn')
+
+        createItemBtn.style.display = 'none'
+        deleteItemBtn.style.display = updateItemBtn.style.display = 'inline-block'
+
+        showDialog()
+
+      def showCreateView (args) :
+        for itemKey in ['Title', 'classID', 'learningID', 'order', 'pointGameIDs', 'video'] :
+          Element('input_{}'.format(itemKey)).element.value = ''
+
+        deleteItemBtn = document.getElementById('deleteItemBtn')
+        updateItemBtn = document.getElementById('updateItemBtn')
+        createItemBtn = document.getElementById('createItemBtn')
+
+        deleteItemBtn.style.display = updateItemBtn.style.display = 'none'
+        createItemBtn.style.display = 'inline-block'
+        showDialog()
+
+      def onClickItem (args) :
+        global items, selectedItem
+        learningID = ''
+        for i in range(len(args.path)) :
+          if 'learning_tr_' in args.path[i].id :
+            learningID = args.path[i].id[len('learning_tr_') : ]
+            break
+        for item in items : 
+          if learningID == item['learningID'] :
+            selectedItem = item
+            showDetailView()
+            break
+
+      async def getData () :
+        global items
+
+        response = await pyfetch(url="http://127.0.0.1:5001/admin_LearningData", method="GET")
+        response_dict = await response.json()
+        items = response_dict['data'].values()
+
+      def initTables () :
+        global items
+        for item in items :
+          addItem(item)
+
+      async def initialize () :
+        await getData()
+        initTables()
+
+      document.getElementById('cancelItemBtn').addEventListener('click', ffi.create_proxy(closeDialog))
+      document.getElementById('deleteItemBtn').addEventListener('click', ffi.create_proxy(onClickDeleteBtn))
+      document.getElementById('updateItemBtn').addEventListener('click', ffi.create_proxy(onClickUpdateBtn))
+      document.getElementById('createItemBtn').addEventListener('click', ffi.create_proxy(onClickCreateBtn))
+      document.getElementById('addButton').addEventListener('click', ffi.create_proxy(showCreateView))
+
+      initialize()
+    </py-script>
+  </body>
+</html>

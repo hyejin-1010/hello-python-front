@@ -48,6 +48,10 @@
         if userid == "" or password == "":
           return
 
+        # TODO:
+        if userid == "admin" and password == "1234" :
+          location.href = '/views/Admin/Learning/Learning.html'
+
         response = await pyfetch(url="http://127.0.0.1:5001/login", method="POST", body=json.dumps({ 'userid': userid, 'password': password }))
         response_dict = await response.json()
 
