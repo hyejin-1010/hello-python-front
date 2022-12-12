@@ -1,7 +1,7 @@
 <html>
   <head>
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-    <link rel="stylesheet" href="./PointGame.css" />
+    <link rel="stylesheet" href="./Dice.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
   </head>
@@ -10,8 +10,8 @@
       <!-- Sidebar -->
       <div class="sidebar">
         <div class="item-sidebar" id="linkToLearning">Learning</div>
-        <div class="item-sidebar selected" id="linkToPointGame">PointGame</div>
-        <div class="item-sidebar" id="linkToDice">Dice</div>
+        <div class="item-sidebar" id="linkToPointGame">PointGame</div>
+        <div class="item-sidebar selected" id="linkToDice">Dice</div>
       </div>
 
       <div class="main">
@@ -19,10 +19,8 @@
           <table>
             <thead>
               <tr>
-                <th>pointGameID</th>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Point</th>
+                <th>diceID</th>
+                <th>pointGameIDs</th>
               </tr>
             </thead>
             <tbody id="tableBodyId">
@@ -47,65 +45,16 @@
 
         <div class="content">
           <div class="box-input">
-            <div class="box-label">Title</div>
+            <div class="box-label">diceID</div>
             <div class="input">
-              <input type="text" placeholder="타이틀을 입력해주세요" id="input_title" />
+              <input type="text" placeholder="ID를 입력해주세요" id="input_diceID" />
             </div>
           </div>
 
           <div class="box-input">
-            <div class="box-label">Content</div>
+            <div class="box-label">pointGameIDs</div>
             <div class="input">
-              <textarea type="text" placeholder="내용을 입력해주세요" id="input_content"> </textarea>
-            </div>
-          </div>
-
-          <div class="box-input">
-            <div class="box-label">Answer</div>
-            <div class="input">
-              <input type="text" placeholder="정답을 입력해주세요" id="input_answer" />
-            </div>
-          </div>
-
-          <div class="box-input">
-            <div class="box-label">pointGameID</div>
-            <div class="input">
-              <input type="text" placeholder="ID를 입력해주세요" id="input_pointGameID" />
-            </div>
-          </div>
-
-          <div class="box-input">
-            <div class="box-label">earnPoint</div>
-            <div class="input">
-              <input type="number" placeholder="포인트를 입력해주세요" id="input_earnPoint" />
-            </div>
-          </div>
-
-          <div class="box-input">
-            <div class="box-label">Hint</div>
-            <div class="input">
-              <input type="text" placeholder="힌트를 입력해주세요" id="input_hint" />
-            </div>
-          </div>
-
-          <div class="box-input">
-            <div class="box-label">해설</div>
-            <div class="input">
-              <input type="text" placeholder="해설을 입력해주세요" id="input_description" />
-            </div>
-          </div>
-
-          <div class="box-input">
-            <div class="box-label">type</div>
-            <div class="input">
-              <input type="text" placeholder="type을 입력해주세요" id="input_type" />
-            </div>
-          </div>
-
-          <div class="box-input">
-            <div class="box-label">selection</div>
-            <div class="input">
-              <input type="text" placeholder="selection를 입력해주세요" id="input_selection" />
+              <input type="text" placeholder="pointGameIDs를 입력해주세요" id="input_pointGameIDs" />
             </div>
           </div>
         </div>
@@ -124,7 +73,7 @@
       selectedItem = None
 
       def addTableFields (trEl, item) : 
-        for itemKey in ['pointGameID', 'title', 'type', 'earnPoint'] :
+        for itemKey in ['diceID', 'pointGameIDs'] :
           tdEl = document.createElement('td')
           if itemKey in item :
             tdEl.appendChild(document.createTextNode(item[itemKey]))
@@ -133,28 +82,24 @@
       def addItem (item) :
         trEl = document.createElement('tr')
         addTableFields(trEl, item)
-        trEl.setAttribute('id', 'pointGame_tr_{}'.format(item['pointGameID']))
+        trEl.setAttribute('id', 'dice_tr_{}'.format(item['diceID']))
         trEl.addEventListener('click', ffi.create_proxy(onClickItem))
         document.getElementById('tableBodyId').append(trEl)
 
       def getInput () :
         input = {}
-        for itemKey in ['answer', 'content', 'description', 'hint', 'pointGameID', 'title', 'type'] :
+        for itemKey in ['diceID'] :
           input[itemKey] = Element('input_{}'.format(itemKey)).element.value
-
-          earnPoint = Element('input_earnPoint').element.value
-        if earnPoint != "" :
-          input['earnPoint'] = int(earnPoint)
-        selection = Element('input_selection').element.value
-        if selection != "" :
-          input['selection'] = ast.literal_eval(selection)
+        pointGameIDs = Element('input_pointGameIDs').element.value
+        if pointGameIDs != "" :
+          input['pointGameIDs'] = ast.literal_eval(pointGameIDs)
         return input
 
       async def onClickCreateBtn (args) :
         global items
         input = getInput()
 
-        response = await pyfetch(url="http://127.0.0.1:5001/admin_PointGameData/add", method="POST", body=json.dumps(input))
+        response = await pyfetch(url="http://127.0.0.1:5001/admin_DiceData/add", method="POST", body=json.dumps(input))
         response_dict = await response.json()
         if response_dict['success'] == False :
           alert('생성에 실패했습니다')
@@ -171,14 +116,14 @@
         input = getInput()
         findIndex = items.index(selectedItem)
 
-        response = await pyfetch(url="http://127.0.0.1:5001/admin_PointGameData/edit", method="POST", body=json.dumps(input))
+        response = await pyfetch(url="http://127.0.0.1:5001/admin_DiceData/edit", method="POST", body=json.dumps(input))
         response_dict = await response.json()
         if response_dict['success'] == False :
           alert('수정에 실패했습니다')
         else :
           item = response_dict['data']
           items[findIndex] = item
-          el = document.getElementById('pointGame_tr_{}'.format(item['pointGameID']));
+          el = document.getElementById('dice_tr_{}'.format(item['diceID']));
           el.innerHTML = ""
           addTableFields(el, item)
           closeDialog(None)
@@ -187,14 +132,14 @@
         global selectedItem, items
         result = confirm('정말 삭제하시겠습니까?')
         if result == True :
-          response = await pyfetch(url="http://127.0.0.1:5001/admin_PointGameData/delete", method="POST", body=json.dumps({ 'pointGameID': selectedItem['pointGameID'] }))
+          response = await pyfetch(url="http://127.0.0.1:5001/admin_DiceData/delete", method="POST", body=json.dumps({ 'diceID': selectedItem['diceID'] }))
           response_dict = await response.json()
           if response_dict['success'] == False :
             alert('삭제에 실패했습니다')
           else :
             items = list(items)
             items.remove(selectedItem)
-            document.getElementById('pointGame_tr_{}'.format(selectedItem['pointGameID'])).remove();
+            document.getElementById('dice_tr_{}'.format(selectedItem['diceID'])).remove();
             closeDialog(None)
 
       def closeDialog (args) :
@@ -206,15 +151,8 @@
         dialog.style.display = 'flex'
 
       def showDetailView () :
-
-        # {'answer': '파이썬', 'content': '', 'description': '', 
-        #'earnPoint': 5, 'hint': '우리 사이트 이름을 잘 떠올려 볼까요?', 
-        #'pointGameID': '1', 
-        #'title': '우리가 앞으로 학습할 프로그래밍 언어의 이름은 무엇일까요?', 
-        #'type': 'input'}
-
         global selectedItem
-        for itemKey in ['answer', 'content', 'description', 'hint', 'pointGameID', 'title', 'type', 'selection'] :
+        for itemKey in ['diceID', 'pointGameIDs'] :
           if itemKey in selectedItem :
             Element('input_{}'.format(itemKey)).element.value = selectedItem[itemKey]
         deleteItemBtn = document.getElementById('deleteItemBtn')
@@ -227,8 +165,7 @@
         showDialog()
 
       def showCreateView (args) :
-        for itemKey in ['answer', 'content', 'description', 'hint', 'pointGameID', 'title', 'type', 'selection'] :
-          print(itemKey)
+        for itemKey in ['diceID', 'pointGameIDs'] :
           Element('input_{}'.format(itemKey)).element.value = ''
 
         deleteItemBtn = document.getElementById('deleteItemBtn')
@@ -241,13 +178,13 @@
 
       def onClickItem (args) :
         global items, selectedItem
-        pointGameID = ''
+        diceID = ''
         for i in range(len(args.path)) :
-          if 'pointGame_tr_' in args.path[i].id :
-            pointGameID = args.path[i].id[len('pointGame_tr_') : ]
+          if 'dice_tr_' in args.path[i].id :
+            diceID = args.path[i].id[len('dice_tr_') : ]
             break
         for item in items : 
-          if pointGameID == item['pointGameID'] :
+          if diceID == item['diceID'] :
             selectedItem = item
             showDetailView()
             break
@@ -255,7 +192,7 @@
       async def getData () :
         global items
 
-        response = await pyfetch(url="http://127.0.0.1:5001/admin_PointGameData", method="GET")
+        response = await pyfetch(url="http://127.0.0.1:5001/admin_DiceData", method="GET")
         response_dict = await response.json()
         items = response_dict['data'].values()
 
@@ -267,12 +204,12 @@
       async def initialize () :
         await getData()
         initTables()
-      
+
       def goToLearning (args) :
         location.href = '/views/Admin/Learning/Learning.html'
       
-      def goToDice (args) :
-        location.href = '/views/Admin/Dice/Dice.html'
+      def goToPointGame (args) :
+        location.href = '/views/Admin/PointGame/PointGame.html'
 
       document.getElementById('cancelItemBtn').addEventListener('click', ffi.create_proxy(closeDialog))
       document.getElementById('deleteItemBtn').addEventListener('click', ffi.create_proxy(onClickDeleteBtn))
@@ -280,7 +217,7 @@
       document.getElementById('createItemBtn').addEventListener('click', ffi.create_proxy(onClickCreateBtn))
       document.getElementById('addButton').addEventListener('click', ffi.create_proxy(showCreateView))
       document.getElementById('linkToLearning').addEventListener('click', ffi.create_proxy(goToLearning))
-      document.getElementById('linkToDice').addEventListener('click', ffi.create_proxy(goToDice))
+      document.getElementById('linkToPointGame').addEventListener('click', ffi.create_proxy(goToPointGame))
 
       initialize()
     </py-script>

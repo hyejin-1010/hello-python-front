@@ -241,11 +241,19 @@
         await getData()
         initTables()
 
+      def goToPointGame (args) :
+        location.href = '/views/Admin/PointGame/PointGame.html'
+
+      def goToDice (args) :
+        location.href = '/views/Admin/Dice/Dice.html'
+
       document.getElementById('cancelItemBtn').addEventListener('click', ffi.create_proxy(closeDialog))
       document.getElementById('deleteItemBtn').addEventListener('click', ffi.create_proxy(onClickDeleteBtn))
       document.getElementById('updateItemBtn').addEventListener('click', ffi.create_proxy(onClickUpdateBtn))
       document.getElementById('createItemBtn').addEventListener('click', ffi.create_proxy(onClickCreateBtn))
       document.getElementById('addButton').addEventListener('click', ffi.create_proxy(showCreateView))
+      document.getElementById('linkToPointGame').addEventListener('click', ffi.create_proxy(goToPointGame))
+      document.getElementById('linkToDice').addEventListener('click', ffi.create_proxy(goToDice))
 
       initialize()
     </py-script>
