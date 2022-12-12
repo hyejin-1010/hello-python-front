@@ -1,3 +1,9 @@
+header {
+  height: 65px;
+  margin: 0;
+  background: #3AA73D;
+}
+
 body {
   margin: 0;
   background: #FBFCF4;
@@ -32,7 +38,7 @@ body {
   background-color: #FAC17F;
 }
 #diceBox4, #diceBox5, #diceBox6, #diceBox12, #diceBox13, #diceBox14 {
-  background-color: #AC88EB
+  background-color: #AC88EB;
 }
 #diceBox7 {
   border-bottom-left-radius:60px;
@@ -135,11 +141,8 @@ img.user {
   background: rgba(0, 0, 0, .3);
 }
 
-.dialog-content {
+.dialog-content, .box-result, .box-select-mode {
   display: none;
-}
-
-.dialog-content, .box-result {
   flex-direction: column;
   justify-content: center;
   margin: auto;
@@ -149,6 +152,50 @@ img.user {
   background: #fff;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 15px;
+}
+
+.box-select-mode {
+  display: flex;
+}
+
+.box-select-mode .message {
+  text-align: center;
+  color: #3AA73D;  
+  font-size: 34px;
+  font-weight: bold;
+}
+
+.box-select-mode .box-select-items {
+  display: flex;
+  margin-top: 20px;
+}
+
+.box-select-items .select-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20vw;
+  height: 20vw;
+  margin: 0 20px;
+  border-radius: 100%;
+  color: #fff;
+}
+.box-select-items .select-item span {
+  margin: auto;
+  font-weight: bold;
+  font-size: 40px;
+}
+.box-select-items .item-1p {
+  background: #FAC17F;
+}
+.box-select-items .item-1p:hover {
+  background: rgb(255, 178, 91);
+}
+.box-select-items .item-2p {
+  background: #AC88EB;
+}
+.box-select-items .item-2p:hover {
+  background: rgb(149, 102, 230);
 }
 
 .box-right, .box-wrong {
