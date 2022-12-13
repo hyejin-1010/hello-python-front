@@ -57,24 +57,24 @@
       def goToMyPage (args) :
         location.href = '/views/MyPage/MyPage.html'
 
-      def getRankingItemDiv (i, rankingItem) :
+      def getRankingItemDiv (rank, rankingItem) :
         global userid
         itemDiv = document.createElement('li')
         itemDiv.className = 'rank_item'
-        itemDiv.innerHTML = ''
 
         itemWrap = document.createElement('div')
         itemWrap.className = 'rank_item_wrap'
         rankNumber = document.createElement('span')
-        rankNumber.appendChild(document.createTextNode('{}'.format(i + 1)))
+        rankNumber.appendChild(document.createTextNode('{}'.format(rank)))
         rankNumber.className = 'rank_number'
         itemWrap.appendChild(rankNumber)
         rankNickname = document.createElement('span')
         nickname = rankingItem['nickname']
+        rankNickname.className = 'rank_nickname'
         if 'userid' in rankingItem and rankingItem['userid'] == userid :
           nickname = '{} (me)'.format(nickname)
+          rankNickname.className += ' me_nickname'
         rankNickname.appendChild(document.createTextNode(nickname))
-        rankNickname.className = 'rank_nickname'
         itemWrap.appendChild(rankNickname)
         itemDiv.appendChild(itemWrap)
 
@@ -91,10 +91,14 @@
         rankingList = response_dict['data']
 
         boxRanking = document.getElementById('boxRanking')
+        boxRanking.innerHTML = ''
 
+        rank = 1
         for i in range(len(rankingList)) :
           rankingItem = rankingList[i]
-          boxRanking.append(getRankingItemDiv(i, rankingItem))
+          boxRanking.append(getRankingItemDiv(rank, rankingItem))
+          if i == 0 or rankingList[i - 1]['point'] != rankingItem['point'] :
+            rank += 1
 
         dialog = document.getElementById('navbarDialog')
         dialog.style.display = 'flex'
