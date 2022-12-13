@@ -12,6 +12,7 @@
         <div class="item-sidebar" id="linkToLearning">Learning</div>
         <div class="item-sidebar" id="linkToPointGame">PointGame</div>
         <div class="item-sidebar selected" id="linkToDice">Dice</div>
+        <div class="btn-logout" id="btnLogout">Logout</div>
       </div>
 
       <div class="main">
@@ -153,8 +154,7 @@
       def showDetailView () :
         global selectedItem
         for itemKey in ['diceID', 'pointGameIDs'] :
-          if itemKey in selectedItem :
-            Element('input_{}'.format(itemKey)).element.value = selectedItem[itemKey]
+          Element('input_{}'.format(itemKey)).element.value = selectedItem[itemKey] if itemKey in selectedItem else ''
         deleteItemBtn = document.getElementById('deleteItemBtn')
         updateItemBtn = document.getElementById('updateItemBtn')
         createItemBtn = document.getElementById('createItemBtn')
@@ -210,6 +210,9 @@
       
       def goToPointGame (args) :
         location.href = '/views/Admin/PointGame/PointGame.html'
+      
+      def doLogout (args) :
+        location.href = '/views/Main/Main.html'
 
       document.getElementById('cancelItemBtn').addEventListener('click', ffi.create_proxy(closeDialog))
       document.getElementById('deleteItemBtn').addEventListener('click', ffi.create_proxy(onClickDeleteBtn))
@@ -218,6 +221,7 @@
       document.getElementById('addButton').addEventListener('click', ffi.create_proxy(showCreateView))
       document.getElementById('linkToLearning').addEventListener('click', ffi.create_proxy(goToLearning))
       document.getElementById('linkToPointGame').addEventListener('click', ffi.create_proxy(goToPointGame))
+      document.getElementById('btnLogout').addEventListener('click', ffi.create_proxy(doLogout))
 
       initialize()
     </py-script>

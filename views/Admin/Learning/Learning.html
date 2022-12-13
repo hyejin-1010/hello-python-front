@@ -12,6 +12,7 @@
         <div class="item-sidebar selected">Learning</div>
         <div class="item-sidebar" id="linkToPointGame">PointGame</div>
         <div class="item-sidebar" id="linkToDice">Dice</div>
+        <div class="btn-logout" id="btnLogout">Logout</div>
       </div>
 
       <div class="main">
@@ -46,9 +47,6 @@
         </div>
 
         <div class="content">
-          <!-- # TODO: {'Title': '파이썬 설치 및 소개', 'classID': '1', 'learningID': '1-1', 
-            'order': 0, 'pointGameIDs': ['1', '2', '3'], 'video': 'video_1_1'} -->
-
           <div class="box-input">
             <div class="box-label">Title</div>
             <div class="input">
@@ -110,6 +108,8 @@
           tdEl = document.createElement('td')
           if itemKey in item :
             tdEl.appendChild(document.createTextNode(item[itemKey]))
+          else :
+            tdEl.appendChild(document.createTextNode(''))
           trEl.appendChild(tdEl)
 
       def addItem (item) :
@@ -189,8 +189,7 @@
       def showDetailView () :
         global selectedItem
         for itemKey in ['Title', 'classID', 'learningID', 'order', 'pointGameIDs', 'video'] :
-          if itemKey in selectedItem :
-            Element('input_{}'.format(itemKey)).element.value = selectedItem[itemKey]
+          Element('input_{}'.format(itemKey)).element.value = selectedItem[itemKey] if itemKey in selectedItem else ''
         deleteItemBtn = document.getElementById('deleteItemBtn')
         updateItemBtn = document.getElementById('updateItemBtn')
         createItemBtn = document.getElementById('createItemBtn')
@@ -247,6 +246,9 @@
       def goToDice (args) :
         location.href = '/views/Admin/Dice/Dice.html'
 
+      def doLogout (args) :
+        location.href = '/views/Main/Main.html'
+
       document.getElementById('cancelItemBtn').addEventListener('click', ffi.create_proxy(closeDialog))
       document.getElementById('deleteItemBtn').addEventListener('click', ffi.create_proxy(onClickDeleteBtn))
       document.getElementById('updateItemBtn').addEventListener('click', ffi.create_proxy(onClickUpdateBtn))
@@ -254,6 +256,7 @@
       document.getElementById('addButton').addEventListener('click', ffi.create_proxy(showCreateView))
       document.getElementById('linkToPointGame').addEventListener('click', ffi.create_proxy(goToPointGame))
       document.getElementById('linkToDice').addEventListener('click', ffi.create_proxy(goToDice))
+      document.getElementById('btnLogout').addEventListener('click', ffi.create_proxy(doLogout))
 
       initialize()
     </py-script>
