@@ -170,6 +170,10 @@ img.user {
   margin-top: 20px;
 }
 
+.box-select-items {
+  margin: 20px auto;
+}
+
 .box-select-items .select-item {
   display: flex;
   flex-direction: column;
@@ -214,7 +218,7 @@ img.user {
   color: red;
 }
 
-.commentary {
+.description {
   padding: 5px 15px;
   font-size: 26px;
   text-align: center;

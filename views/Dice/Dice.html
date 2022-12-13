@@ -124,7 +124,7 @@
           <div class="box-right" id="resultRight">정답입니다</div>
           <div class="box-wrong" id="resultWrong">오답입니다<br/>원래 자리로 돌아가게 됩니다.</div>
 
-          <div class="commentary" id="resultCommentary"></div>
+          <div class="description" id="resultDescription"></div>
 
           <div class="box-result-buttons">
             <button class="btn-done-result" id="doneResult">확인</button>
@@ -147,32 +147,13 @@
     <py-script>
       from js import document, location, alert, localStorage
       from pyodide import ffi
+      from pyodide.http import pyfetch
+      import json
       import random
       import asyncio
 
-      questions = [
-        { 'title': '다음 중 파이썬의 특징이 아닌 것을 고르세요.', 'answer': 1, 'selections': ['파이썬은 컴파일러 언어이다.', '파이썬의 개발자는 ‘귀도 반 로섬’이다.', '파이썬은 1991년에 개발되었다.', '파이썬은 우리말로 ‘비단뱀’을 뜻한다.'], 'type': 'selection', 'commentary': '파이썬은 인터프리터 언어입니다.' },
-        { 'title': '파이썬은 다른 프로그래밍 언어(Java, C+ 등등)에 비해 비교적 쉽고 간단하다.<br/>맞으면 O, 틀리면 X', 'answer': 'O', 'type': 'OX', 'commentary': '파이썬은 Java, C+ 등의 다른 프로그래밍 언어에 비해 비교적 쉬운 편이에요!' },
-        { 'title': '파이썬의 사용 분야를 생각해보고, 한 곳만 입력해보세요.', 'answer': '머신러닝', 'type': 'input', 'commentary': '파이썬은 인공지능(AI) / 빅데이터(BigData) / 웹 / 머신러닝 등 여러 분야에서 사용되고 있는 언어랍니다!' },
-        { 'title': "‘number’라는 변수에 숫자 ‘100’을 넣는 코드를 작성해보세요.", 'answer': 100, 'type': 'input', 'commentary': 'number이라는 변수에 100을 넣어야하기 때문에 number = 100을 입력해요!', 'isCode': True, 'field': 'number' },
-        { 'title': '다음과 같이 입력했을 때 화면에출력되는 값은?', 'content': '년도 = 1990<br/>년도 = 2022<br/>print(년도)<br/>', 'answer': '2022', 'type': 'input', 'commentary': '변수는 사용자의 입력에 따라 계속해서 변한다는 특징을 가지고 있고,‘년도’라는 변수가 1990에서 2022으로 변했기 때문에 년도를 출력했을 때 2022라는 값이 출력되요!' },
-        { 'title': "‘color’과 ‘Color’은 같은 변수이다. 맞으면 O, 틀리면 X", 'answer': 'X', 'type': 'OX', 'commentary': '변수는 대/소문자를 구분한다는 특징을 가지고 있어요!' },
-        { 'title': "‘숫자’라는 변수 안에 10, 20, 30 값이 들어간 리스트(list)를 만들어보세요.", 'answer': [10, 20, 30], 'type': 'input', 'commentary': '변수명 = [리스트값]을 입력해주면 쉽게 리스트를 만들 수 있어요!', 'isCode': True, 'field': '숫자' },
-        { 'title': '데이터 값을 사용자로부터 입력 받는 함수는 무엇인가요?', 'answer': 'input', 'type': 'input', 'commentary': '사용자에게 값을 입력 받기 위해서는 ‘input’ 함수를 사용해요!' },
-        { 'title': '주어진 변수 “나이” 를 출력해보세요.', 'content': '주어진 변수 “나이” 를 출력해보세요.', 'answer': 'print(나이)', 'type': 'input', 'commentary': 'print(나이)를 입력하면 숫자 8이 화면에 출력되요!' },
-        { 'title': '제어문의 종류로 알맞지 않은것은?', 'type': 'selection', 'answer': 4, 'selections': ['for', 'while', 'if', 'int'], 'commentary': '제어문은 총 3가지가 있고, 세부적으로 for과 while은 반복문에 해당하고 if는 조건문에 해당해요! 반복문과 조건문을 합친 것을 우리는 제어문이라고 해요. int는 파이썬에서 정수를 나타낼 때 쓰는 데이터 타입에 해당해요!' },
-        { 'title': '조건문(if문)을 작성할때 elif 는 한개만 사용하여야한다.<br/>맞으면 O, 틀리면 X', 'type': 'OX', 'answer': 'X', 'commentary': '조건이 여러 개일 경우, elif 사용해서 여러 개의 조건을 입력할 수 있어요. 이것을 우리는 ‘중첩 if문’이라고 불러요!' },
-        { 'title': '조건문의 특징으로 알맞지 않은 것은?', 'answer': 1, 'type': 'selection', 'selections': ['조건문을 작성할 때 들여쓰기를 하지 않아도 된다.', '조건문은 프로그램의 흐름을 제어하는 문법이다.', '조건문은 if문을 사용한다', '조건문의 끝에 콜론(:)을 붙인다.'], 'commentary': '조건문(if문)을 작성할때 꼭 들여쓰기를 해줘야해요! 또한 조건문(if문)을 작성함으로써 프로그램의 흐름을 제어할 수 있고,  if 조건을 입력한 다음에는 콜론(:)을 입력해야 오류가 나지 않는답니다!' },
-        { 'title': '반복문의 종류로 알맞은 것은?', 'answer': 4, 'type': 'selection', 'selections': ['int', 'if', 'print', 'for'], 'commentary': '반복문의 종류는 총 2가지로,  for문과 while문이 있어요.' },
-        { 'title': '반복문을 즉시 탈출하고자 할때 쓰는 함수명은 무엇일까요?', 'answer': 3, 'type': 'selection', 'selections': ['str', 'while', 'break',' else'], 'commentary': '반복문을 즉시 탈출하고자할땐 break를 사용해요!<br/>str은 문자형 데이터 타입을 나타낼 때 쓰이고, while은 반복문에 해당해요!<br/>else는 조건문(if문)에서 함께 쓰인답니다!' },
-        { 'title': '비교연산자 X > Y 설명으로 옳은것은?', 'answer': 2, 'type': 'selection', 'selections': ['X와 Y가 서로 같을때 참(True)이다.', 'X가 Y보다 클 때 참(True)이다.', 'X와 Y가 서로 다를때 참(True)이다.', 'X가 Y보다 작을 때 참(True)이다.'], 'commentary': '비교연산자 ‘X > Y’는 X > Y가 클 경우 참이라는 뜻을 가지고 있어요!' },
-        { 'title': 'for문과 while문 둘은 반복문이지만 아래와 같은 차이점이 있다.<br/>맞으면 O, 틀리면 X', 'content': 'for문은 반복횟수가 정해진 경우, while문은 특정 조건이 만족할 때까지 수행하는 경우에 사용된다.', 'type': 'OX', 'answer': 'O', 'commentary': 'for문과 while의 가장 큰 특징으로는 for문은 반복횟수가 정해져 있으나 while문은 반복할 횟수가 정확하게 정해져 있지 않아요! 그래서 while문은 True를 입력해 통해 조건이 만족할 때까지 계속적으로 반복할 수 있답니다!' },
-        { 'title': 'for문과 while문 둘은 반복문이지만 아래와 같은 차이점이 있다.<br/>맞으면 O, 틀리면 X', 'content': 'for문은 반복횟수가 정해진 경우, while문은 특정 조건이 만족할 때까지 수행하는 경우에 사용된다.', 'type': 'OX', 'answer': 'O', 'commentary': 'for문과 while의 가장 큰 특징으로는 for문은 반복횟수가 정해져 있으나 while문은 반복할 횟수가 정확하게 정해져 있지 않아요! 그래서 while문은 True를 입력해 통해 조건이 만족할 때까지 계속적으로 반복할 수 있답니다!' },
-        { 'title': '예약어 continue 에 대한 설명으로 옳은 것은?', 'type': 'selection', 'answer': 2, 'selections': ['특정조건에서 반복문을 멈추고싶을때 이용한다.', '특정조건에서 작동을 수행하지않고 넘어가고싶을때 이용한다.', '특정변수의 크기를 비교할때 사용한다.', '반복문에서 필수적으로 적어야하는 예약어이다.'], 'commentary': 'continue는 break와 같이 반복문에서 사용하지만 ‘break’는 반복문을 탈출할 때에 쓰고, ‘continue’는 코드를 실행하지 않고 넘기고 싶을 때에 사용해요!' },
-        { 'title': '논리연산자의 종류로 옳은 것은?', 'type': 'selection', 'answer': 3, 'selections': ['>', '>=', 'and', '&lt;'], 'commentary': '논리연산자의 종류에는 “and”, “or”, “not”이 있어요. <br/> > 또는 &lt;=와 같은 등호는 비교연산자에 해당해요!' },
-        { 'title': '변수 A와 B를 사용해서 두 값을 더한 값을 화면에 출력해보세요.', 'content': 'a=10<br/>b=15', 'type': 'input', 'answer': 'print(a+b)', 'commentary': '출력함수인 print를 사용해서 print(a+b)를 출력하면 화면에 25가 출력되요!' },
-        { 'title': '변수 A와 B를 사용해서 두 값을 더한 값을 화면에 출력해보세요.', 'content': 'a=10<br/>b=15', 'type': 'input', 'answer': 'print(a+b)', 'commentary': '출력함수인 print를 사용해서 print(a+b)를 출력하면 화면에 25가 출력되요!' },
-      ]
+      questions = []
+      lastRandomNumber = 1
 
       '''
       주사위 굴리기 관련 코드
@@ -209,7 +190,12 @@
 
       # 주사위 게임 1 ~ 6 random 값 return 하는 함수
       def getRandomDiceNumber () :
-        return random.randrange(0, 6) + 1
+        global lastRandomNumber
+        while True :
+          value = random.randrange(0, 6) + 1
+          if lastRandomNumber != value :
+            lastRandomNumber = value
+            return value
 
       # 이미지 (주사위 게임 유저 아이콘) 생성하는 함수 
       def createUserImage (no) :
@@ -249,7 +235,7 @@
         questionInput = document.getElementById('questionInput')
         questionOX = document.getElementById('questionOX')
 
-        if 'content' in question :
+        if 'content' in question and question['content'] :
           questionContent.style.display = 'block'
           questionContent.innerHTML = question['content']
         else :
@@ -265,8 +251,8 @@
         else :
           questionInput.style.display = questionOX.style.display = 'none'
           questionSelection.style.display = 'block'
-          for i in range(len(question['selections'])) :
-            selection = question['selections'][i]
+          for i in range(len(question['selection'])) :
+            selection = question['selection'][i]
             selectionEl = document.getElementById('selection{}Content'.format(i + 1))
             selectionEl.innerHTML = selection
 
@@ -337,8 +323,8 @@
 
         resultRight = document.getElementById('resultRight')
         resultWrong = document.getElementById('resultWrong')
-        resultCommentary = document.getElementById('resultCommentary')
-        resultCommentary.innerHTML = question['commentary']
+        resultDescription = document.getElementById('resultDescription')
+        resultDescription.innerHTML = question['description']
 
         # 정답 체크
         isAnswer = False
@@ -420,9 +406,16 @@
         btnDice.innerHTML = "1P 주사위 굴리기"
         closeDialog()
 
-      def initialize () :
+      async def initialize () :
+        global questions, isRolling
         dialog = document.getElementById('dialog')
         dialog.style.display = 'flex'
+
+        response = await pyfetch(url='http://127.0.0.1:5001/DiceGames/{}'.format('1-1'), method="GET")
+        response_dict = await response.json()
+        isRolling = True
+        questions = list(response_dict['data'].values())
+        isRolling = False
       
       '''
       버튼 Event 연결 ..
