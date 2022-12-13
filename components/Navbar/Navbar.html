@@ -9,7 +9,7 @@
   </head>
   <body>
     <div class="navbar">
-      <div class="logo" id="logo">
+      <div class="logo" id="logoDiv">
         <span>헬로파이썬</span>
       </div>
 
@@ -30,36 +30,6 @@
         </div>
 
         <ul class="rank_wrap" id="boxRanking">
-          <!--
-          <li class="rank_item">
-            <div class="rank_item_wrap">
-              <span class="rank_number">1</span>
-              <span class="rank_nickname" style=margin-left:5px;>Nickname_1</span>
-            </div>
-            <span class="rank_point">125 point</span>
-          </li>
-          <li class="rank_item">
-            <div class="rank_item_wrap">
-              <span class="rank_number">2</span>
-              <span class="rank_nickname">Nickname_2</span>
-            </div>
-            <span class="rank_point">95 point</span>
-          </li>
-          <li class="rank_item">
-            <div class="rank_item_wrap">
-              <span class="rank_number">3</span>
-              <span class="rank_nickname">Nickname_3</span>
-            </div>
-            <span class="rank_point">85 point</span>
-          </li>
-          <li class="rank_item">
-            <div class="rank_item_wrap">
-              <span class="rank_number">4</span>
-              <span class="rank_nickname">Nickname_4</span>
-            </div>
-            <span class="rank_point">25 point</span>
-          </li>
-          -->
         </ul>
       </div>
     </div>
@@ -80,6 +50,9 @@
         localStorage.setItem('hp-user', None)
         localStorage.setItem('hp-user-id', None)
         location.href = '/views/Login/Login.html'
+      
+      def goToMain (args) : 
+        location.href = '/views/Main/Main.html'
 
       def goToMyPage (args) :
         location.href = '/views/MyPage/MyPage.html'
@@ -106,7 +79,7 @@
         itemDiv.appendChild(itemWrap)
 
         rankPoint = document.createElement('span')
-        rankPoint.appendChild(document.createTextNode('{}'.format('{}'.format(rankingItem['point']))))
+        rankPoint.appendChild(document.createTextNode('{}'.format('{} point'.format(rankingItem['point']))))
         rankPoint.className = 'rank_point'
         itemDiv.appendChild(rankPoint)
         return itemDiv
@@ -134,17 +107,11 @@
         global userid
         userid = localStorage.getItem('hp-user-id')
 
-      closeDialogBtn = document.getElementById('closeDialogBtn')
-      closeDialogBtn.addEventListener('click', ffi.create_proxy(closeNavbarDialog))
-
-      logoutBtn = document.getElementById('logoutBtn')
-      logoutBtn.addEventListener('click', ffi.create_proxy(doLogout))
-
-      rankingBtn = document.getElementById('rankingBtn')
-      rankingBtn.addEventListener('click', ffi.create_proxy(showRankingDialog))
-
-      myPageBtn = document.getElementById('myPageBtn')
-      myPageBtn.addEventListener('click', ffi.create_proxy(goToMyPage))
+      document.getElementById('closeDialogBtn').addEventListener('click', ffi.create_proxy(closeNavbarDialog))
+      document.getElementById('logoutBtn').addEventListener('click', ffi.create_proxy(doLogout))
+      document.getElementById('rankingBtn').addEventListener('click', ffi.create_proxy(showRankingDialog))
+      document.getElementById('myPageBtn').addEventListener('click', ffi.create_proxy(goToMyPage))
+      document.getElementById('logoDiv').addEventListener('click', ffi.create_proxy(goToMain))
 
       initialize()
     </py-script>
