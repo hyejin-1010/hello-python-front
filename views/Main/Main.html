@@ -24,89 +24,66 @@
       </div>
     </div>
 
+    <py-script src="../../models.py"></py-script>
     <py-script>
       from js import document, location, localStorage
       from pyodide import ffi
       from pyodide.http import pyfetch
-      import asyncio
       import json
 
-      lectures = []
+      learnings = []
 
       # 데이터 가져오기
-      async def getLectures () :
-        global lectures
-
+      async def getLearnings () :
+        global learnings
         response = await pyfetch(url='http://127.0.0.1:5001/learningDatas/{}'.format(1), method="GET")
         response_dict = await response.json()
         data = response_dict['data']
-        lectureKeys = data.keys()
+        learningKeys = data.keys()
 
-        lectures = []
+        learnings = []
 
-        # TODO: 현재는 모든 Lecture가 오기 때문에 프론트에서 Filtering 해준다.
-        for lectureKey in lectureKeys :
-          lecture = data[lectureKey]
-          if 'classID' in data[lectureKey] and data[lectureKey]['classID'] == '1' :
-            lectures.append(data[lectureKey])
+        # TODO: 현재는 모든 Learning가 오기 때문에 프론트에서 Filtering 해준다.
+        for learningKey in learningKeys :
+          learning = data[learningKey]
+          if 'classID' in data[learningKey] and data[learningKey]['classID'] == '1' :
+            learnings.append(Learning(data[learningKey]))
 
+      # Circle 클릭 시 
       def onClickCircle (args) :
         for i in range(len(args.path)) :
           if 'circle' in args.path[i].id :
             circleNo = args.path[i].id[len('circle_item_') : ]
-            if circleNo == '5' :
+            if circleNo == 'dice' :
               location.href = '/views/Dice/Dice.html'
             else : 
               location.href = '/views/Study/Study.html?no={}'.format(circleNo)
             break
 
+      # 주사위 Circle Item Get 함수 
+      def getDiceCircle () :
+        global learnings
+        learningDiv = document.createElement('div')
+        learningDiv.className = 'circle circle-odd circle-dice' if len(learnings) % 2 == 1 else 'circle circle-even circle-dice'
+        learningDiv.setAttribute('id', 'circle_item_dice')
+        learningSpan = document.createElement('span')
+        diceImg = document.createElement('img')
+        diceImg.src = '../../images/dice.png'
+        learningSpan.appendChild(diceImg)
+        learningDiv.appendChild(learningSpan)
+        return learningDiv
+
+      # 화면에 Learning를 Circle로 그려주는 함수 
       def drawCircles () :
-        for i in range(len(lectures) + 1) :
-          isDice = i == len(lectures)
-          learningID = i
-          if isDice == False :  
-            learningID = lectures[i]['learningID']
-
-          circleId = 'circle_item_{}'.format(learningID)
-          lectureDiv = document.createElement('div')
-          lineDiv = document.createElement('div')
+        global learnings, doneLearnings
         
-          # circle 별 class 적용 (index의 짝홀수 여부에 따라 상단/하단 위치에 할 수 있도록 class 적용)
-          if isDice :
-            lectureDiv.className = 'circle circle-odd circle-dice'
+        for i in range(len(learnings) + 1) :
+          isDice = i == len(learnings)
+          learningDiv = getDiceCircle() if isDice else learnings[i].getCircle(doneLearnings)
+          document.getElementById('box-circles').append(learningDiv)
+          learningDiv.addEventListener('click', ffi.create_proxy(onClickCircle))
 
-          elif i % 2 == 0 :
-            lectureDiv.className = 'circle circle-even'
-            lineDiv.className ='upLine'
-      
-          else :
-            lectureDiv.className = 'circle circle-odd'
-            lineDiv.className = 'downLine'
-        
-
-          if learningID in doneLectures :
-            lectureDiv.className += ' done-circle'
-
-          lectureDiv.setAttribute('id', circleId)
-          lectureDiv.setAttribute('index', i)
-
-          lineDiv.setAttribute('id', circleId)
-
-          # circle 내 내부 텍스트 생성 
-          lectureSpan = document.createElement('span')
-          if isDice :
-            diceImg = document.createElement('img')
-            diceImg.src = '../../images/dice.png'
-            lectureSpan.appendChild(diceImg)
-          else :
-            lectureSpan.appendChild(document.createTextNode(i + 1))
-
-          lectureDiv.appendChild(lectureSpan)
-          lectureDiv.appendChild(lineDiv)
-          document.getElementById('box-circles').append(lectureDiv)
-
-          lectureDiv.addEventListener('click', ffi.create_proxy(onClickCircle))
-
+      # 현재 유저 데이터 가져오는 함수 
       async def getUser () :
         global localUser
         response = await pyfetch(url='http://127.0.0.1:5001/userInformation/{}'.format(localUser['userid']), method="GET")
@@ -116,8 +93,8 @@
         localStorage.setItem('hp-user-id', localUser['userid'])
 
       async def initialize () :
-        global doneLectures, localUser
-        doneLectures = []
+        global doneLearnings, localUser
+        doneLearnings = []
         localUser = localStorage.getItem('hp-user')
         if localUser and localUser != "undefined" :
           localUser = json.loads(localUser)
@@ -126,8 +103,8 @@
           return
         await getUser()
         if 'completedLearnings' in localUser :
-          doneLectures = list(localUser['completedLearnings'])
-        await getLectures()
+          doneLearnings = list(localUser['completedLearnings'])
+        await getLearnings()
         drawCircles()
 
       initialize()
