@@ -29,34 +29,45 @@
       </div>
     </div>
 
+    <py-script src="../../models.py"></py-script>
     <py-script>
-      from js import document, location 
+      from js import document, location, localStorage
       from pyodide import ffi
       from pyodide.http import pyfetch
 
       queries = location.href.split('?')[1]
-      no = queries[len('no=') : ]
+      learningID = queries[len('no=') : ]
+      learning = None
 
-      async def initialize () :
-        global no
-        response = await pyfetch(url='http://127.0.0.1:5001/LearningData/{}'.format(no), method="GET")
-        response_dict = await response.json()
-        learning = response_dict['data']
+      def initHtmlView () :
+        global learning
 
-        # init title, video
         titleDiv = document.getElementById('titleDiv')
-        titleDiv.innerHTML = learning['Title']
+        titleDiv.innerHTML = learning.Title
 
         videoTag = document.getElementById('studyVideo')
         source = document.createElement('source')
-        source.setAttribute('src', '/videos/{}.mp4'.format(learning['video']))
+        source.setAttribute('src', '/videos/{}.mp4'.format(learning.video))
         source.setAttribute('type', 'video/mp4')
         videoTag.appendChild(source)
 
+      async def initialize () :
+        global learningID, learning
+        response = await pyfetch(url='http://127.0.0.1:5001/LearningData/{}'.format(learningID), method="GET")
+        response_dict = await response.json()
+        if response_dict['success'] == False :
+          location.href = 'views/Main/Main.html'
+          return
+
+        learning = Learning(response_dict['data'])
+        initHtmlView()
+
+      # 다음 버튼 클릭 시, 호출되는 함수 
       def doNext (args) :
-        location.href = '/views/PointGame/PointGame.html?no={}'.format(no)
-      nextBtnProxy = ffi.create_proxy(doNext)
-      document.getElementById('nextBtn').addEventListener('click', nextBtnProxy)
+        global learningID
+        location.href = '/views/PointGame/PointGame.html?no={}'.format(learningID)
+
+      document.getElementById('nextBtn').addEventListener('click', ffi.create_proxy(doNext))
 
       initialize()
     </py-script>
