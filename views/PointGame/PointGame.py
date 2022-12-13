@@ -1,4 +1,5 @@
-from js import document
+from js import document, localStorage
+from pyodide.http import pyfetch
 
 def initView () :
     global games
@@ -41,31 +42,44 @@ def initView () :
         selectionEl = document.getElementById('selection{}Content'.format(i + 1))
         selectionEl.innerHTML = selection
 
+def reducePoint () :
+  global step
+  if games[step].earnPoint > 0 :
+    games[step].earnPoint -= 1
+    pointDiv = document.getElementById('point')
+    pointDiv.innerHTML = '{}포인트'.format(games[step].earnPoint)
   
-def doneAnswer (answer) :
+async def doCorrectAnswer (game) :
+  document.getElementById('rightBox') .style.display = 'block'
+  document.getElementById('wrongBox') .style.display = 'none'
+  commentaryBox = document.getElementById('commentaryBox') 
+  if game.description :
+    commentaryBox.innerHTML = game.description
+  commentaryBox.style.display = 'block'
+
+  userid = localStorage.getItem('hp-user-id')
+  response = await pyfetch(url="http://127.0.0.1:5001/addPoint", method="POST", body=json.dumps({ 'userid': userid, 'point': games[step].earnPoint }))
+  response_dict = await response.json()
+
+async def doneAnswer (answer) :
   global step, games, lastResult
   game = games[step]
-
-  dialog = document.getElementById('dialog') 
-  dialog.style.display = 'flex'
 
   dialogContent = document.getElementById('dialogContent') 
   hintBox = document.getElementById('hintBox') 
   dialogContent.style.display = 'flex'
   hintBox.style.display = 'none'
 
-  rightBox = document.getElementById('rightBox') 
-  wrongBox = document.getElementById('wrongBox') 
-  commentaryBox = document.getElementById('commentaryBox') 
+  dialog = document.getElementById('dialog') 
+  dialog.style.display = 'flex'
 
-  lastResult = game['answer'] == answer
+  commentaryBox = document.getElementById('commentaryBox') 
+  lastResult = game.answer == answer
   if lastResult :
-    rightBox.style.display = 'block'
-    wrongBox.style.display = 'none'
-    if 'description' in game :
-      commentaryBox.innerHTML = game['description']
-    commentaryBox.style.display = 'block'
-  else :
-    rightBox.style.display = 'none'
-    wrongBox.style.display = 'block'
+    await doCorrectAnswer(game)
+  else : # 오답인 경우 
+    document.getElementById('rightBox') .style.display = 'none'
+    document.getElementById('wrongBox') .style.display = 'block'
     commentaryBox.style.display = 'none'
+    reducePoint()
+

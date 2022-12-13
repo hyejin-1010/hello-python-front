@@ -139,25 +139,25 @@
         dialog.style.display = 'none'
 
       # type: 'input' 답변 버튼 클릭 시 
-      def doAnswer (args) :
+      async def doAnswer (args) :
         value = Element('inputAnswer').element.value  
-        doneAnswer(value)
+        await doneAnswer(value)
         Element('inputAnswer').element.value = ''
 
       # O 버튼 클릭 시 
-      def onClickOBtn (args) :
-        doneAnswer('O')
+      async def onClickOBtn (args) :
+        await doneAnswer('O')
 
       # X 버튼 클릭 시 
-      def onClickXBtn (args) :
-        doneAnswer('X')
+      async def onClickXBtn (args) :
+        await doneAnswer('X')
 
       # Selection 클릭 시 
-      def onClickSelection (args) :
+      async def onClickSelection (args) :
         for i in range(len(args.path)) :
           if 'selection' in args.path[i].id :
             selectionNo = int(args.path[i].id[len('selection')])
-            doneAnswer(selectionNo)
+            await doneAnswer(selectionNo)
             break
 
       # PointGame 종료 시 
@@ -192,6 +192,7 @@
         document.getElementById('dialogContent') .style.display = 'none'
         document.getElementById('hintBox') .style.display = 'flex'
         document.getElementById('hintContent') .innerHTML = games[step].hint
+        reducePoint()
 
       # 힌트 완료 버튼 클릭 시 - Dialog 를 닫는다. 
       def onClickHintDone (args) :
