@@ -32,8 +32,15 @@ class Learning () :
     # Circle 내 텍스트 넣기 
     lectureSpan = document.createElement('span')
     lectureSpan.appendChild(document.createTextNode(self.order))
+    lectureSpan.className = 'txt'
+
+    # Circle 내 Hover 텍스트 넣기 
+    lectureHoverSpan = document.createElement('span')
+    lectureHoverSpan.appendChild(document.createTextNode(self.Title))
+    lectureHoverSpan.className = 'txt-hover'
 
     lectureDiv.appendChild(lectureSpan)
+    lectureDiv.appendChild(lectureHoverSpan)
     lectureDiv.appendChild(lineDiv)
 
     return lectureDiv
