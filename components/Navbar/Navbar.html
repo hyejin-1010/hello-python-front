@@ -1,30 +1,119 @@
 <html>
   <head>
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <!--
     <link rel="stylesheet" href="./Navbar.css" />
+    -->
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
   </head>
   <body>
-    <div class="wrap">
-      <div class="logo" id="logo">
+    <div class="navbar">
+      <div class="logo" id="logoDiv">
         <span>헬로파이썬</span>
       </div>
 
-      <div class="blank"></div>
-      <div class="btn"><span>랭킹 확인하기</span></div> 
-      <div class="btn"><span>마이페이지</span></div> 
+      <div class="navbar-blank"></div>
+      <div class="btn" id="rankingBtn"><span>랭킹 확인하기</span></div> 
+      <div class="btn" id="myPageBtn"><span>마이페이지</span></div> 
+      <div class="btn" id="logoutBtn"><span>로그아웃</span></div> 
+    </div>
+
+    <div class="dialog-navbar" id="navbarDialog">
+      <div class="ranking-content navbar-dialog-content" id="rankingContent">
+        <div class="dialog-header">
+          <span id="closeDialogBtn" class="btn-close">X</span>
+        </div>
+        <div class="line"></div>
+        <div class="header" id="header">
+          <div class="title" id="title">RANK</div>
+        </div>
+
+        <ul class="rank_wrap" id="boxRanking">
+        </ul>
+      </div>
     </div>
 
     <py-script>
-      from js import document, location
       from pyodide import ffi
+      from js import document, location
+
+      userid = None
+      rankingList = []
+
+      # 랭킹 확인하기 버튼 클릭시 호출되는 함수
+      async def ViewRanking(args):
+        response = await pyfetch(url="http://127.0.0.1:5001/Ranking", method="GET")
+        response_dict = await response.json()
+
+      def doLogout (args) :
+        localStorage.setItem('hp-user', None)
+        localStorage.setItem('hp-user-id', None)
+        location.href = '/views/Login/Login.html'
       
-      def onClickLogo (args) :
+      def goToMain (args) : 
         location.href = '/views/Main/Main.html'
 
-      logo = document.getElementById('logo')
-      logo.addEventListener('click', ffi.create_proxy(onClickLogo))
+      def goToMyPage (args) :
+        location.href = '/views/MyPage/MyPage.html'
+
+      def getRankingItemDiv (i, rankingItem) :
+        global userid
+        itemDiv = document.createElement('li')
+        itemDiv.className = 'rank_item'
+        itemDiv.innerHTML = ''
+
+        itemWrap = document.createElement('div')
+        itemWrap.className = 'rank_item_wrap'
+        rankNumber = document.createElement('span')
+        rankNumber.appendChild(document.createTextNode('{}'.format(i + 1)))
+        rankNumber.className = 'rank_number'
+        itemWrap.appendChild(rankNumber)
+        rankNickname = document.createElement('span')
+        nickname = rankingItem['nickname']
+        if 'userid' in rankingItem and rankingItem['userid'] == userid :
+          nickname = '{} (me)'.format(nickname)
+        rankNickname.appendChild(document.createTextNode(nickname))
+        rankNickname.className = 'rank_nickname'
+        itemWrap.appendChild(rankNickname)
+        itemDiv.appendChild(itemWrap)
+
+        rankPoint = document.createElement('span')
+        rankPoint.appendChild(document.createTextNode('{}'.format('{} point'.format(rankingItem['point']))))
+        rankPoint.className = 'rank_point'
+        itemDiv.appendChild(rankPoint)
+        return itemDiv
+
+      async def showRankingDialog (args) :
+        global rankingList
+        response = await pyfetch(url="http://127.0.0.1:5001/Ranking", method="GET")
+        response_dict = await response.json()
+        rankingList = response_dict['data']
+
+        boxRanking = document.getElementById('boxRanking')
+
+        for i in range(len(rankingList)) :
+          rankingItem = rankingList[i]
+          boxRanking.append(getRankingItemDiv(i, rankingItem))
+
+        dialog = document.getElementById('navbarDialog')
+        dialog.style.display = 'flex'
+      
+      def closeNavbarDialog (args) : 
+        dialog = document.getElementById('navbarDialog')
+        dialog.style.display = 'none'
+
+      def initialize () :
+        global userid
+        userid = localStorage.getItem('hp-user-id')
+
+      document.getElementById('closeDialogBtn').addEventListener('click', ffi.create_proxy(closeNavbarDialog))
+      document.getElementById('logoutBtn').addEventListener('click', ffi.create_proxy(doLogout))
+      document.getElementById('rankingBtn').addEventListener('click', ffi.create_proxy(showRankingDialog))
+      document.getElementById('myPageBtn').addEventListener('click', ffi.create_proxy(goToMyPage))
+      document.getElementById('logoDiv').addEventListener('click', ffi.create_proxy(goToMain))
+
+      initialize()
     </py-script>
   </body>
 </html>

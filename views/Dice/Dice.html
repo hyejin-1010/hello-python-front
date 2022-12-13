@@ -2,12 +2,21 @@
   <head>
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <link rel="stylesheet" href="./Dice.css" />
+    <link rel="stylesheet" href="../../styles/Navbar.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
+    <script src="http://code.jquery.com/jquery-1.6.4.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      $(function () {
+        $.get("../../components/Navbar/Navbar.html", function (data) {
+          $("#navbarBox").append(data);
+        });
+      });
+    </script>
   </head>
   <body>
     <header>
-      <object type="text/html" data="../../components/Navbar/Navbar.html" class="navbar"></object>  
+      <div id="navbarBox"></div>
     </header>
 
     <div class="main">
@@ -121,11 +130,22 @@
             <button class="btn-done-result" id="doneResult">확인</button>
           </div>
         </div>
+
+        <div class="box-select-mode" id="dialogMode">
+          <div class="message">
+            주사위 게임 모드를 선택해주세요
+          </div>
+
+          <div class="box-select-items">
+            <div class="select-item item-1p" id="btn1p"><span>1P</span></div>
+            <div class="select-item item-2p" id="btn2p"><span>2P</span></div>
+          </div>
+        </div>
       </div>
     </div>
 
     <py-script>
-      from js import document, location, alert
+      from js import document, location, alert, localStorage
       from pyodide import ffi
       import random
       import asyncio
@@ -147,11 +167,11 @@
         { 'title': '반복문을 즉시 탈출하고자 할때 쓰는 함수명은 무엇일까요?', 'answer': 3, 'type': 'selection', 'selections': ['str', 'while', 'break',' else'], 'commentary': '반복문을 즉시 탈출하고자할땐 break를 사용해요!<br/>str은 문자형 데이터 타입을 나타낼 때 쓰이고, while은 반복문에 해당해요!<br/>else는 조건문(if문)에서 함께 쓰인답니다!' },
         { 'title': '비교연산자 X > Y 설명으로 옳은것은?', 'answer': 2, 'type': 'selection', 'selections': ['X와 Y가 서로 같을때 참(True)이다.', 'X가 Y보다 클 때 참(True)이다.', 'X와 Y가 서로 다를때 참(True)이다.', 'X가 Y보다 작을 때 참(True)이다.'], 'commentary': '비교연산자 ‘X > Y’는 X > Y가 클 경우 참이라는 뜻을 가지고 있어요!' },
         { 'title': 'for문과 while문 둘은 반복문이지만 아래와 같은 차이점이 있다.<br/>맞으면 O, 틀리면 X', 'content': 'for문은 반복횟수가 정해진 경우, while문은 특정 조건이 만족할 때까지 수행하는 경우에 사용된다.', 'type': 'OX', 'answer': 'O', 'commentary': 'for문과 while의 가장 큰 특징으로는 for문은 반복횟수가 정해져 있으나 while문은 반복할 횟수가 정확하게 정해져 있지 않아요! 그래서 while문은 True를 입력해 통해 조건이 만족할 때까지 계속적으로 반복할 수 있답니다!' },
-        { 'title': "‘숫자’가 0~9까지 출력되도록 코드 작성, 반복문 while 사용", 'content': '숫자 = 0 (변수)<br/><br/>[	빈	칸	]<br/>&nbsp; &nbsp; &nbsp; &nbsp; print(숫자) 	(변수 ‘숫자’ 출력)<br/>&nbsp; &nbsp; &nbsp; &nbsp; 숫자 = 숫자 +1 	(while문을 한번 반복 시 변수 ‘숫자’  +1 증가)', 'type': 'input', 'answer': "while 숫자 &lt; 10 :", 'commentary': '문제에서 주어진 조건이 0~9까지이니 [while 숫자 &lt; 10 :] 또는 [while 숫자 &lt;= 9 :] 를 작성하면 되요!' },
+        { 'title': 'for문과 while문 둘은 반복문이지만 아래와 같은 차이점이 있다.<br/>맞으면 O, 틀리면 X', 'content': 'for문은 반복횟수가 정해진 경우, while문은 특정 조건이 만족할 때까지 수행하는 경우에 사용된다.', 'type': 'OX', 'answer': 'O', 'commentary': 'for문과 while의 가장 큰 특징으로는 for문은 반복횟수가 정해져 있으나 while문은 반복할 횟수가 정확하게 정해져 있지 않아요! 그래서 while문은 True를 입력해 통해 조건이 만족할 때까지 계속적으로 반복할 수 있답니다!' },
         { 'title': '예약어 continue 에 대한 설명으로 옳은 것은?', 'type': 'selection', 'answer': 2, 'selections': ['특정조건에서 반복문을 멈추고싶을때 이용한다.', '특정조건에서 작동을 수행하지않고 넘어가고싶을때 이용한다.', '특정변수의 크기를 비교할때 사용한다.', '반복문에서 필수적으로 적어야하는 예약어이다.'], 'commentary': 'continue는 break와 같이 반복문에서 사용하지만 ‘break’는 반복문을 탈출할 때에 쓰고, ‘continue’는 코드를 실행하지 않고 넘기고 싶을 때에 사용해요!' },
         { 'title': '논리연산자의 종류로 옳은 것은?', 'type': 'selection', 'answer': 3, 'selections': ['>', '>=', 'and', '&lt;'], 'commentary': '논리연산자의 종류에는 “and”, “or”, “not”이 있어요. <br/> > 또는 &lt;=와 같은 등호는 비교연산자에 해당해요!' },
         { 'title': '변수 A와 B를 사용해서 두 값을 더한 값을 화면에 출력해보세요.', 'content': 'a=10<br/>b=15', 'type': 'input', 'answer': 'print(a+b)', 'commentary': '출력함수인 print를 사용해서 print(a+b)를 출력하면 화면에 25가 출력되요!' },
-        { 'title': 'while문을 사용해  6번 반복하는 코드를 작성해보세요.', 'type': 'input', 'answer': 'while >= 6:', 'commentary': 'while문은 기본적으로 [while 조건:] 형식으로 쓰이기 때문에, while >=6 또는 while >7를 입력해서 작성하면 되요!' }
+        { 'title': '변수 A와 B를 사용해서 두 값을 더한 값을 화면에 출력해보세요.', 'content': 'a=10<br/>b=15', 'type': 'input', 'answer': 'print(a+b)', 'commentary': '출력함수인 print를 사용해서 print(a+b)를 출력하면 화면에 25가 출력되요!' },
       ]
 
       '''
@@ -166,6 +186,8 @@
       face5 = document.getElementById('face5')
       face6 = document.getElementById('face6')
 
+      diceMode = 1 # 1: 1p, 2: 2p
+      turn = 1 # 1: 1p, 2: 2p
       isRolling = False # 주사위 굴리기 애니메이션이 진행 중인지 
 
       def diceResizing() :
@@ -181,10 +203,9 @@
       '''
       주사위 게임 진행 관련 코드 ... 
       '''
-      user1Value = 0
-      user1BeforeValue = 0
-      user2Value = 0
-      user2BeforeValue = 0
+
+      userValue = { 1: 0, 2: 0 }
+      userBeforeValue = { 1: 0, 2: 0 }
 
       # 주사위 게임 1 ~ 6 random 값 return 하는 함수
       def getRandomDiceNumber () :
@@ -200,28 +221,29 @@
       
       # 주사위 게임 보드 내 유저(1p, 2p) 그리는 함수 
       def drawUser () :
-        global user1Value, user2Value
+        global userValue
 
         for i in range(2) :
           document.getElementById('user{}Image'.format(i + 1)).remove()
           image = createUserImage(i + 1)
-          diceBox = document.getElementById('diceBox{}'.format(user2Value if i == 1 else user1Value))
+          diceBox = document.getElementById('diceBox{}'.format(userValue[2] if i == 1 else userValue[1]))
           diceBox.appendChild(image)
 
       # 문제 Dialog Show 함수 
       def showQuestionDialog () :
-        global user1Value, questions
+        global userValue, questions, turn 
 
         dialog = document.getElementById('dialog')
         dialogContent = document.getElementById('dialogContent')
         dialog.style.display = dialogContent.style.display = 'flex'
         dialogResult = document.getElementById('dialogResult')
-        dialogResult.style.display = 'none'
+        dialogMode = document.getElementById('dialogMode')
+        dialogMode.style.display = dialogResult.style.display = 'none'
 
-        question = questions[user1Value - 1]
+        question = questions[userValue[turn] - 1]
 
         questionTitle = document.getElementById('questionTitle')
-        questionTitle.innerHTML = '{}. {}'.format(user1Value, question['title'])
+        questionTitle.innerHTML = '{}. {}'.format(userValue[turn], question['title'])
         questionContent = document.getElementById('questionContent')
         questionSelection = document.getElementById('questionSelection')
         questionInput = document.getElementById('questionInput')
@@ -250,7 +272,7 @@
 
       # 주사위 굴리기 버튼 클릭 시 
       async def rolling (args) :
-        global user1Value, user2Value, isRolling
+        global userValue, isRolling, turn, diceMode
 
         if isRolling == True :
           return
@@ -261,15 +283,22 @@
         diceClass = 'face{}'.format(randomValue)
         dice.classList.add(diceClass)
 
-        user1Value += randomValue
+        userValue[turn] += randomValue
 
-        # user 1p가 완주했을 경우 
-        if user1Value >= 21 :
-          user1Value = 0 
+        # 현재 순서인 유저가 완주했을 경우 
+        if userValue[turn] >= 22 :
+          message = '승리했습니다'
+          if diceMode == 2 :
+            if turn == 1 :
+              message = '1P의 승리입니다.'
+            else :
+              message = '2P의 승리입니다.'
+
+          userValue[turn] = 0
           await asyncio.sleep(0.7)
           drawUser()
           await asyncio.sleep(0.7)
-          alert('승리했습니다.')
+          alert(message)
           location.href = '/views/Main/Main.html'
           return
 
@@ -277,26 +306,29 @@
         drawUser()
         await asyncio.sleep(0.7)
 
-        user2RandomValue = getRandomDiceNumber()
-        if user2RandomValue >= 2 :
-          user2Value += getRandomDiceNumber()
+        # 1P 모드인 경우 
+        if diceMode == 1 :
+          user2RandomValue = getRandomDiceNumber()
+          if user2RandomValue >= 2 :
+            userValue[2] += getRandomDiceNumber()
 
-        # user 2p가 완주했을 경우 
-        if user2Value >= 21 :
+          # user 2p가 완주했을 경우 
+          if userValue[2] >= 22 :
+            userValue[2] = 0
+            drawUser()
+            await asyncio.sleep(0.7)
+            alert('패배했습니다.')
+            location.href = '/views/Main/Main.html'
+            return
           drawUser()
-          await asyncio.sleep(0.7)
-          alert('패배했습니다.')
-          location.href = '/views/Main/Main.html'
-          return
 
-        drawUser()
         isRolling = False
         showQuestionDialog()
 
       # 정답 입력(선택) 완료 시 _ 정답 처리 작업 
       def doneAnswer (answer) :
-        global questions, user1Value, user1BeforeValue
-        question = questions[user1Value - 1]
+        global questions, userValue, userBeforeValue, turn, diceMode
+        question = questions[userValue[turn] - 1]
 
         dialogContent = document.getElementById('dialogContent')
         dialogResult = document.getElementById('dialogResult')
@@ -328,12 +360,21 @@
         if isAnswer :
           resultRight.style.display = 'block'
           resultWrong.style.display = 'none'
-          user1BeforeValue = user1Value
+          userBeforeValue[turn] = userValue[turn]
         # 오답인 경우 
         else :
           resultRight.style.display = 'none'
           resultWrong.style.display = 'block'
-          user1Value = user1BeforeValue
+          userValue[turn] = userBeforeValue[turn]
+
+        if diceMode == 2 : 
+          if turn == 1 : 
+            turn = 2
+          else :
+            turn = 1
+          btnDice = document.getElementById('btnDice')
+          btnDice.innerHTML = "{}P 주사위 굴리기".format(turn)
+
         drawUser()
 
       # Input 형식 정답 입력 완료 시 
@@ -357,11 +398,31 @@
             selectionNo = int(args.path[i].id[len('selection')])
             doneAnswer(selectionNo)
             break
+      
+      def closeDialog () : 
+        dialog = document.getElementById('dialog')
+        dialog.style.display = 'none'
 
       # 정답 / 오답 Result 화면에서 확인 버튼 클릭 시 
       def onClickDoneResult (args) :
+        closeDialog()
+
+      def onClick1pMode (args) :
+        global diceMode
+        diceMode = 1
+        closeDialog()
+      
+      def onClick2pMode (args) :
+        global diceMode, turn
+        diceMode = 2
+        turn = 1
+        btnDice = document.getElementById('btnDice')
+        btnDice.innerHTML = "1P 주사위 굴리기"
+        closeDialog()
+
+      def initialize () :
         dialog = document.getElementById('dialog')
-        dialog.style.display = 'none'
+        dialog.style.display = 'flex'
       
       '''
       버튼 Event 연결 ..
@@ -383,6 +444,11 @@
       
       doneResult = document.getElementById('doneResult')
       doneResult.addEventListener('click', ffi.create_proxy(onClickDoneResult))
+
+      document.getElementById('btn1p').addEventListener('click', ffi.create_proxy(onClick1pMode))
+      document.getElementById('btn2p').addEventListener('click', ffi.create_proxy(onClick2pMode))
+
+      initialize()
     </py-script>
   </body>
 </html>

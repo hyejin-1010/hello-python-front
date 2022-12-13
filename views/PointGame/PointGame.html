@@ -2,12 +2,21 @@
   <head>
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <link rel="stylesheet" href="./PointGame.css" />
+    <link rel="stylesheet" href="../../styles/Navbar.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
+    <script src="http://code.jquery.com/jquery-1.6.4.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      $(function () {
+        $.get("../../components/Navbar/Navbar.html", function (data) {
+          $("#navbarBox").append(data);
+        });
+      });
+    </script>
   </head>
   <body>
     <header>
-      <object type="text/html" data="../../components/Navbar/Navbar.html" class="navbar"></object>  
+      <div id="navbarBox"></div>
     </header>
 
     <div class="main">
@@ -17,7 +26,7 @@
         </div>
 
         <div class="header" id="header">
-          <div class="title" id="title">포인트 게임 1단계</div>
+          <div class="title" id="titlePointGame">포인트 게임 1단계</div>
           <div class="step" id="step">1/3</div>
         </div>
         <div class="sub-header">
@@ -94,190 +103,112 @@
       </div>
     </div>
 
+    <py-script src="../../models.py"></py-script>
+    <py-script src="./PointGame.py"></py-script>
     <py-script>
       from js import document, location, localStorage
       from pyodide import ffi
+      from pyodide.http import pyfetch
+      import json
 
       queries = location.href.split('?')[1]
-      no = queries[len(queries) - 1]
+      learningID = queries[len('no=') : ]
 
       step = 0
       lastResult = False
 
-      pointGames = [
-        [
-          { 'point': 5, 'title': '우리가 앞으로 학습할 프로그래밍 언어의 이름은 무엇일까요?', 'answer': '파이썬', 'type': 'input', 'hint': '우리 사이트 이름을 잘 떠올려 볼까요?' },
-          { 'point': 5, 'title': '파이썬은 우리말(한국어)로 무엇을 나타내는 단어일까요?', 'answer': '비단뱀', 'type': 'input', 'hint': '비단 모양의 구렁이를 떠올려 볼까요?', 'commentary': '파이썬은 우리말로 ‘비단뱀’이라는 뜻을 가지고 있어요!' },
-          { 'point': 5, 'title': '파이썬의 사용 분야가 아닌 것을 고르시오.', 'answer': 4, 'type': 'selection', 'selections': ['빅데이터', '머신러닝', '인공지능(AI)', 'VR'], 'hint': '파이썬은 가상현실 분야에서는 쓰이지 않아요~', 'commentary': '파이썬은 빅데이터, 머신러닝, 인공지능, 웹 등 여러 분야에서 사용되고 있어요!' }
-        ],
-        [
-          { 'point': 5, 'title': '프로그래밍 언어에서 데이터 이름 뜻하거나 일시적으로 데이터를 저장하는 장소를 무엇이라고 부르나요?', 'answer': 1, 'type': 'selection', 'selections': ['변수', '연산자', '유리수', '명령어'], 'hint': '값이 계속 변할 수 있다는 특징을 가지고 있어요!', 'commentary': '데이터의 이름을 뜻하거나 일시적으로 데이터를 저장하는 공간을 우리는 ‘변수’라고 불러요!' },
-          { 'point': 5, 'title': '다음 중 파이썬에서 ‘라이언’ 또는 “Hello”라는 문자는 파이썬에서 어떤 데이터 타입에 해당할까요?', 'answer': 2, 'type': 'selection', 'selections': ['bool', 'str', 'int',' float'], 'hint': '각각의 자료형이 쓰이는 데이터 유형에 대해서 다시 한 번 떠올려 볼까요?', 'commentary': "str형(라이언, Hello와 같은 문자값)<br/>bool형(‘Ture’ 또는 ‘False’)<br/>int형(10, 20, 30과 같은 정수값)<br/>float형(0.2, 0.03과 같은 실수값)" },
-          { 'point': 5, 'title': '변수의 가장 알맞은 특징인 것을 고르시오.', 'answer': 3, 'type': 'selection', 'selections': ['변수명은 숫자를 먼저 사용해도 상관없다.', '변수명은 예약어를 사용해도 된다.', '변수명은 대/소문자를 구분한다.', '변수명은 띄어쓰기를 사용할 수 있다.'], 'hint': "‘Number’과 ‘number’이라는 변수는 비슷해보이지만 알고 보면 서로 다른 변수랍니다!", 'commentary': '변수명을 작성할 때에는 반드시 문자로 시작해야 하고, 프로그래밍 언어에서 미리 지정한 예약어를 사용해서는 안돼요! 또한 언더바(_)는 사용할 수 있지만 띄어쓰기는 사용할 수 없는 특징을 가지고 있어요~ ' }
-        ],
-        [
-          { 'point': 5, 'title': '파이썬에서 사용자에게 입력 값을 받을 때에는 input()을 사용하고, 화면에 해당 값을 출력 할 때에는 print()를 사용한다. 맞으면 O, 틀리면 X', 'answer': 'O', 'type': 'OX', 'hint': '입력 함수와 출력 함수에 대해 잘 떠올려 볼까요?' },
-          { 'point': 5, 'title': "‘파이썬이 최고야!’라는 데이터를 출력하고 싶을 때, 어떻게 입력하면 되는지 다음 보기에서 고르시오.", 'type': 'selection', 'answer': 4, 'selections': ['input("파이썬이 최고야!")', 'type("파이썬이 최고야!")', 'str("파이썬이 최고야!")', 'print("파이썬이 최고야!")'], 'hint': '데이터 값 또는 변수 값을 입력 받고싶을때 쓰는 input 함수와 반대되는 함수를 잘 떠올려 볼까요?', 'commentary': '값을 출력하기 위해서는 print 함수를 사용해요!' },
-          { 'point': 5, 'title': "사용자에게 데이터 값 또는 변수 값을 입력 받고 싶을 때 사용하는 함수는 (&nbsp;&nbsp;&nbsp;&nbsp;)이다. (&nbsp;&nbsp;&nbsp;&nbsp;)에 해당하는 함수를 무엇일까요?", 'type': 'input', 'answer': 'input', 'hint': '&lt;print>와 반대되는 함수를 떠올려볼까요?', 'commentary': '입력 받는 함수로는 input을 사용해요!' },
-        ],
-        [
-          { 'point': 5, 'title': '파이썬에서 조건을 입력할 때 기본적으로 쓰이는 함수명은 무엇일까요?', 'answer': 1, 'type': 'selection', 'selections': ['if', 'def', 'print', 'float'], 'hint': '조건문은 결국 가정이고, 가정해서 값(데이터)을 찾는 것이 조건문이에요!', 'commentary': '조건문의 형식은 기본적으로 [if ~ elif ~ else]과 같은 형식으로 사용되요!' },
-          { 'point': 5, 'title': '다음의 코드를 보고 x 값이 9일때 출력되는 문구를 적으시오.', 'type': 'input', 'answer': '오답입니다.', 'content': 'x = 9<br/><br/>if x == 10:<br/>&nbsp;&nbsp;&nbsp;&nbsp;print(“정답입니다.”)<br/>else:<br/>&nbsp;&nbsp;&nbsp;&nbsp;print(“오답입니다.”)', 'hint': 'if 조건문이 만족하면 if 실행문이 출력되고, 그렇지 못한 경우에는  else로 넘어가게 되요!', 'commentary': 'x가 9이기 때문에 조건이 만족되지 않아서, else문이 실행되서 “오답입니다.”가 화면에 출력되요! ' },
-          { 'point': 5, 'title': '조건식이 하나 일 경우 if를 입력하고, 조건식이 2개일 경우 elif를 입력합니다. <br/>그럼 마지막으로 조건식이 ‘False’에 속하는 조건을 입력할 때에는 어떤 함수를 사용할까요?', 'type': 'input', 'answer': 'else', 'hint': 'if, elif 다음으로 마지막에 쓰이는 조건문 함수를 떠올려보세요!', 'commentary': '조건문의 형식은 기본적으로 [if ~ elif ~ else]과 같은 형식으로 사용되요!' }
-        ],
-        [
-          { 'point': 5, 'title': '반복문의 종류에는 ‘for’과 ‘while’가 있다. 맞으면O, 틀리면X', 'answer': 'O', 'type': 'OX', 'hint': '앞에서 배운 반복문에 대해 다시 한번 잘 떠올려 볼까요?', 'commentary': '반복문은 총 두가지로 for문과 while문이 있어요!' },
-          { 'point': 5, 'title': 'while문을 사용할 때에 무한루프(특정 값이 나올 때까지 계속 반복)가 필요할 때 쓰이는 함수명은 무엇인가요?', 'answer': 'True', 'type': 'input', 'hint': 'while OOOO, 대문자로 시작하고 bool형을 떠올려보면 도움이 될꺼에요!', 'commentary': 'while문에서 계속적인 반복이 필요할 경우 무한루프를 위해 True를 사용해요!' },
-          { 'point': 5, 'title': 'for문을 사용해서 1부터 10까지 숫자에서 2씩 증가하는 반복문을 입력해보세요. (변수명은 i를 사용하고, print는 입력하지 않아도 됩니다!)<br/>[출력 예시: 1, 3, 5, 7, 9]', 'answer': 'for i in range(1, 11, 2)', 'hint': 'for 변수명 in 범위(시작값, 종료값, 증가값)', 'commentary': 'for문 사용 방법:<br/>for 변수명 in 범위(시작값, 종료값, 증가값)<br/>프로그래밍 언어는 0부터 시작되는 특징을 가지고 있기 때문에, 종료값은 반드시 실행횟수+1 해줘야하는 특징을 잊지마세요!' }
-        ]
-      ]
+      games = []
 
-      games = pointGames[int(no) - 1]
+      # Point Game Data를 가져오는 함수 
+      async def getGameData () :
+        global games
+        response = await pyfetch(url='http://127.0.0.1:5001/PointGames/{}'.format(learningID), method="GET")
+        response_dict = await response.json()
+        data = response_dict['data']
 
-      def initialize () :
-        title = document.getElementById('title')
-        stepDiv = document.getElementById('step')
-        title.innerHTML = '포인트 게임 {}단계'.format(step + 1)
-        stepDiv.innerHTML = '{}/3'.format(step + 1)
-        pointDiv = document.getElementById('point')
-        game = games[step]
-        pointDiv.innerHTML = '{}포인트'.format(game['point'])
-        questionTitle = document.getElementById('questionTitle')
-        questionTitle.innerHTML = game['title']
-        questionContent = document.getElementById('questionContent')
-        if 'content' in game :
-          questionContent.style.display = 'block'
-          questionContent.innerHTML = game['content']
-        else :
-          questionContent.style.display = 'none'
+        games = []
+        for value in data.values() :
+          games.append(PointGame(value))
 
-        inputAnswerBox = document.getElementById('inputAnswerBox')
-        selectionAnswerBox = document.getElementById('selectionAnswerBox')
-        oxAnswerBox = document.getElementById('oxAnswerBox')
-
-        if game['type'] == 'input' :
-          selectionAnswerBox.style.display = 'none'
-          oxAnswerBox.style.display = 'none'
-          inputAnswerBox.style.display = 'flex'
-        elif game['type'] == 'OX' :
-          selectionAnswerBox.style.display = 'none'
-          inputAnswerBox.style.display = 'none'
-          oxAnswerBox.style.display = 'flex'
-        else :
-          selectionAnswerBox.style.display = 'grid'
-          inputAnswerBox.style.display = 'none'
-          oxAnswerBox.style.display = 'none'
-
-          for i in range(len(game['selections'])) :
-            selection = game['selections'][i]
-            selectionEl = document.getElementById('selection{}Content'.format(i + 1))
-            selectionEl.innerHTML = selection
+      async def initialize () :
+        await getGameData()
+        initView()
 
       def closeDialog () :
         dialog = document.getElementById('dialog')
         dialog.style.display = 'none'
 
-      def doneAnswer (answer) :
-        global step, games, lastResult
-        game = games[step]
-
-        dialog = document.getElementById('dialog') 
-        dialog.style.display = 'flex'
-
-        dialogContent = document.getElementById('dialogContent') 
-        hintBox = document.getElementById('hintBox') 
-        dialogContent.style.display = 'flex'
-        hintBox.style.display = 'none'
-
-        rightBox = document.getElementById('rightBox') 
-        wrongBox = document.getElementById('wrongBox') 
-        commentaryBox = document.getElementById('commentaryBox') 
-
-        lastResult = game['answer'] == answer
-        if lastResult :
-          rightBox.style.display = 'block'
-          wrongBox.style.display = 'none'
-          if 'commentary' in game :
-            commentaryBox.innerHTML = game['commentary']
-          commentaryBox.style.display = 'block'
-        else :
-          rightBox.style.display = 'none'
-          wrongBox.style.display = 'block'
-          commentaryBox.style.display = 'none'
-
-      def doAnswer (args) :
+      # type: 'input' 답변 버튼 클릭 시 
+      async def doAnswer (args) :
         value = Element('inputAnswer').element.value  
-        doneAnswer(value)
+        await doneAnswer(value)
         Element('inputAnswer').element.value = ''
 
-      def onClickOBtn (args) :
-        doneAnswer('O')
+      # O 버튼 클릭 시 
+      async def onClickOBtn (args) :
+        await doneAnswer('O')
 
-      def onClickXBtn (args) :
-        doneAnswer('X')
+      # X 버튼 클릭 시 
+      async def onClickXBtn (args) :
+        await doneAnswer('X')
 
-      def onClickSelection (args) :
+      # Selection 클릭 시 
+      async def onClickSelection (args) :
         for i in range(len(args.path)) :
           if 'selection' in args.path[i].id :
             selectionNo = int(args.path[i].id[len('selection')])
-            doneAnswer(selectionNo)
+            await doneAnswer(selectionNo)
             break
 
-      def onClickDialogDoneButton (args) :
-        global step, no
+      # PointGame 종료 시 
+      async def doneLearning () :
+        global learningID
+        userid = localStorage.getItem('hp-user-id')
+        response = await pyfetch(url="http://127.0.0.1:5001/doneLearning", method="POST", body=json.dumps({ 'userid': userid, 'learningID': learningID }))
+        response_dict = await response.json()
+        location.href = '/views/Main/Main.html'
+
+      async def onClickDialogDoneButton (args) :
+        global step
 
         if lastResult :
           step = step + 1
           if step >= 3 :
-            doneLectures = localStorage.getItem('doneLectures') or []
-            doneLectures = list(doneLectures)
-            if not no in doneLectures :
-              doneLectures.append(no)
-            localStorage.setItem('doneLectures', doneLectures)
-            location.href = '/views/Main/Main.html'
+            await doneLearning()
           else :
-            initialize()
+            initView()
         closeDialog()
 
+      '''
+      ================================================================
+      힌트 관련 함수
+      ================================================================
+      '''
+
+      # 힌트 버튼 클릭 시, 힌트 Dialog View 
       def onClickHintBtn (args) :
         global games, step
+        document.getElementById('dialog') .style.display = 'flex'
+        document.getElementById('dialogContent') .style.display = 'none'
+        document.getElementById('hintBox') .style.display = 'flex'
+        document.getElementById('hintContent') .innerHTML = games[step].hint
+        reducePoint()
 
-        dialog = document.getElementById('dialog') 
-        dialog.style.display = 'flex'
-
-        dialogContent = document.getElementById('dialogContent') 
-        hintBox = document.getElementById('hintBox') 
-        dialogContent.style.display = 'none'
-        hintBox.style.display = 'flex'
-
-        hintContent = document.getElementById('hintContent') 
-        hintContent.innerHTML = games[step]['hint']
-
+      # 힌트 완료 버튼 클릭 시 - Dialog 를 닫는다. 
       def onClickHintDone (args) :
         closeDialog()
 
-      initialize()
-
-      answerBtn = document.getElementById('answerBtn')
-      answerBtn.addEventListener('click', ffi.create_proxy(doAnswer))
-
       for i in range(4) :
-        selection = document.getElementById('selection{}'.format(i + 1))
-        selection.addEventListener('click', ffi.create_proxy(onClickSelection))
+        document.getElementById('selection{}'.format(i + 1)).addEventListener('click', ffi.create_proxy(onClickSelection))
 
-      doneResult = document.getElementById('doneResult')
-      doneResult.addEventListener('click', ffi.create_proxy(onClickDialogDoneButton))
+      document.getElementById('answerBtn').addEventListener('click', ffi.create_proxy(doAnswer))
+      document.getElementById('doneResult').addEventListener('click', ffi.create_proxy(onClickDialogDoneButton))
+      document.getElementById('hintBtn').addEventListener('click', ffi.create_proxy(onClickHintBtn))
+      document.getElementById('doneHint').addEventListener('click', ffi.create_proxy(onClickHintDone))
+      document.getElementById('oBtn').addEventListener('click', ffi.create_proxy(onClickOBtn))
+      document.getElementById('xBtn').addEventListener('click', ffi.create_proxy(onClickXBtn))
 
-      hintBtn = document.getElementById('hintBtn')
-      hintBtn.addEventListener('click', ffi.create_proxy(onClickHintBtn))
-
-      doneHint = document.getElementById('doneHint')
-      doneHint.addEventListener('click', ffi.create_proxy(onClickHintDone))
-
-      oBtn = document.getElementById('oBtn')
-      oBtn.addEventListener('click', ffi.create_proxy(onClickOBtn))
-      xBtn = document.getElementById('xBtn')
-      xBtn.addEventListener('click', ffi.create_proxy(onClickXBtn))
+      initialize()
     </py-script>
   </body>
 </html>

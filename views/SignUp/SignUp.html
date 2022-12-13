@@ -14,7 +14,7 @@
           <!-- UID -->
           <div class="box-input box-input-id">
             <input type="text" id="inputUid" placeholder="아이디" />
-            <button class="btn-check-id" id="checkIdBtn">중복확인</button>
+            <button type="button" id="checkIdDoBtn" class="btn-check-id">중복확인</button>
           </div>
 
           <!-- PASSWORD -->
@@ -32,24 +32,74 @@
             <input type="text" id="inputNickname" placeholder="닉네임" />
           </div>
 
-          <button class="btn-signUp" id="btnSignUp">회원가입</button> 
+          <button type="button" class="btn-signUp" id="btnSignUp">회원가입</button> 
         </form>
       </div>  
     </div>
 
     <py-script>
-      from js import document, location 
+      from js import document, location, alert, localStorage
       from pyodide import ffi
+      from pyodide.http import pyfetch
+      import asyncio
+      import json
 
-      # print('SignUp View') 
+      checkedUid = False
+
+      checkIdDoBtn = document.getElementById('checkIdDoBtn')
 
       # 아이디 중복 체크 버튼 클릭 시 호출되는 함수
-      def checkId(args):
-        print('check id')
-      
-      # 아이디 중복 체크 버튼에 checkId 함수를 연결해주는 작업
-      checkIdProxy = ffi.create_proxy(checkId)
-      document.getElementById('checkIdBtn')
+      async def doCheckId(args):
+        global checkedUid
+        userid = Element('inputUid').element.value  
+        if checkedUid == True or not userid :
+          return
+        response = await pyfetch(url="http://127.0.0.1:5001/register/idCheck", method="POST", body=json.dumps({ 'userid': userid }))
+        response_dict = await response.json()
+        success = response_dict['success']
+        if success == False :
+          alert('이미 사용 중인 아이디입니다.')
+        else :
+          checkedUid = True
+          checkIdDoBtn.className = 'btn-check-id done-checked-id'
+
+      def checkedInputFields () :
+        for inputId in ['inputUid', 'inputPassword', 'inputPasswordConfirm', 'inputNickname'] :
+          value = Element(inputId).element.value  
+          if not value : 
+            alert('모든 필드를 입력했는지 확인해주세요.')
+            return False
+        if Element('inputPassword').element.value != Element('inputPasswordConfirm').element.value :
+          alert('비밀번호가 일치하지 않습니다.')
+          return False
+        return True
+
+      async def doSignUp (args) :
+        global checkedUid
+        if checkedUid == False :
+          alert('중복체크를 해주세요.')
+          return
+        if checkedInputFields() == False :
+          return
+        print('aa')
+
+        userid = Element('inputUid').element.value
+        password = Element('inputPassword').element.value
+        nickname = Element('inputNickname').element.value
+
+        body = json.dumps({ 'userid': userid, 'password': password, 'nickname': nickname })
+        response = await pyfetch(url="http://127.0.0.1:5001/register", method="POST", body=body)
+        response_dict = await response.json()
+        success = response_dict['success']
+        if success == False :
+          alert('회원가입에 실패했습니다.')
+        else :
+          alert('회원가입에 성공했습니다.')
+          location.href = '/views/Login/Login.html'
+
+      doCheckIdProxy = ffi.create_proxy(doCheckId)
+      checkIdDoBtn.addEventListener('click', doCheckIdProxy)
+      document.getElementById('btnSignUp').addEventListener('click', ffi.create_proxy(doSignUp))
     </py-script>
   </body>
 </html>

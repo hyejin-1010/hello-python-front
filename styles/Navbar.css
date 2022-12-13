@@ -6,6 +6,7 @@
 }
 
 .logo {
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -93,6 +94,8 @@
 }
 
 .rank_wrap{
+  overflow-y: auto;
+  height: 85%;
   padding: 0;
 }
 
@@ -123,6 +126,7 @@
   position: relative;
   display: block;
   width: auto;
+  margin-left: 5px;
 }
 .rank_nickname::after{
   content : '';

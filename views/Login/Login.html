@@ -28,25 +28,38 @@
 
 
     <py-script>
-      from js import document, location, alert
+      from js import document, location, alert, localStorage
       from pyodide import ffi
       from pyodide.http import pyfetch
       import asyncio
       import json
 
+      # 이미 로그인한 유저인지 체크
+      def checkLoggedIn () :
+        localUser = localStorage.getItem('hp-user')
+        if not localUser and 'userid' not in localUser :
+          location.href = '/views/Main/Main.html'
+
       # 로그인 버튼 클릭 시 호출되는 함수 
       async def doLogin(args):
         userid = Element('userIdInput').element.value  
-        password = Element('passwordInput').element.value  
+        password = Element('passwordInput').element.value
 
         if userid == "" or password == "":
           return
 
+        # TODO:
+        if userid == "admin" and password == "1234" :
+          location.href = '/views/Admin/Learning/Learning.html'
+
         response = await pyfetch(url="http://127.0.0.1:5001/login", method="POST", body=json.dumps({ 'userid': userid, 'password': password }))
         response_dict = await response.json()
+
         if response_dict['success'] == False :
           alert('로그인에 실패했습니다.')
         else :
+          localStorage.setItem('hp-user', json.dumps(response_dict['data']))
+          localStorage.setItem('hp-user-id', response_dict['data']['userid'])
           location.href = '/views/Main/Main.html'
 
       # 회원가입 버튼 클릭 시 호출되는 함수 
@@ -60,6 +73,8 @@
       # 회원가입 버튼에 goToSignUp 함수를 연결해주는 작업 
       doGoToSignUpProxy = ffi.create_proxy(goToSignUp)
       document.getElementById('goToSignUp').addEventListener('click', doGoToSignUpProxy)
+
+      checkLoggedIn()
     </py-script>
   </body>
 </html>

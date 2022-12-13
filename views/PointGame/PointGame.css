@@ -1,3 +1,9 @@
+header {
+  height: 65px;
+  margin: 0;
+  background: #3AA73D;
+}
+
 body {
   margin: 0;
   background: #FBFCF4;
@@ -12,6 +18,11 @@ body {
   display: flex;
   width: 100%;
   height: calc(100% - 65px);
+}
+
+.box-table {
+  height: 90vh;
+  overflow-y: auto;
 }
 
 .box {
@@ -106,7 +117,7 @@ body {
   margin-top: 20px;
 }
 
-.box-answer input {
+.box-answer input, .box-answer textarea {
   flex: 1;
   font-size: 20px;
   padding: 10px 5px;
