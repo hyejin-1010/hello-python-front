@@ -50,8 +50,6 @@
           if 'classID' in data[lectureKey] and data[lectureKey]['classID'] == '1' :
             lectures.append(data[lectureKey])
 
-      doneLectures = localStorage.getItem('doneLectures') or []
-
       def onClickCircle (args) :
         for i in range(len(args.path)) :
           if 'circle' in args.path[i].id :
@@ -65,9 +63,11 @@
       def drawCircles () :
         for i in range(len(lectures) + 1) :
           isDice = i == len(lectures)
-          circleId = 'circle_item_{}'.format(i)
-          if isDice == False :
-            circleId = 'circle_item_{}'.format(lectures[i]['learningID'])
+          learningID = i
+          if isDice == False :  
+            learningID = lectures[i]['learningID']
+
+          circleId = 'circle_item_{}'.format(learningID)
           lectureDiv = document.createElement('div')
           lineDiv = document.createElement('div')
         
@@ -84,7 +84,7 @@
             lineDiv.className = 'downLine'
         
 
-          if '{}'.format(i + 1) in doneLectures :
+          if learningID in doneLectures :
             lectureDiv.className += ' done-circle'
 
           lectureDiv.setAttribute('id', circleId)
@@ -107,7 +107,27 @@
 
           lectureDiv.addEventListener('click', ffi.create_proxy(onClickCircle))
 
+      async def getUser () :
+        global localUser
+        response = await pyfetch(url='http://127.0.0.1:5001/userInformation/{}'.format(localUser['userid']), method="GET")
+        response_dict = await response.json()
+        localUser = response_dict['data']
+        localStorage.setItem('hp-user', json.dumps(localUser))
+        localStorage.setItem('hp-user-id', localUser['userid'])
+
       async def initialize () :
+        global doneLectures, localUser
+        doneLectures = []
+        localUser = localStorage.getItem('hp-user')
+        if localUser and localUser != "undefined" :
+          localUser = json.loads(localUser)
+        else :
+          location.href = '/views/Login/Login.html'
+          return
+        await getUser()
+        if 'completedLearnings' in localUser :
+          doneLectures = list(localUser['completedLearnings'])
+        print(doneLectures)
         await getLectures()
         drawCircles()
 

@@ -20,6 +20,11 @@ body {
   height: calc(100% - 65px);
 }
 
+.box-table {
+  height: 90vh;
+  overflow-y: auto;
+}
+
 .box {
   position: relative;
   margin: auto;
@@ -112,7 +117,7 @@ body {
   margin-top: 20px;
 }
 
-.box-answer input {
+.box-answer input, .box-answer textarea {
   flex: 1;
   font-size: 20px;
   padding: 10px 5px;

@@ -26,7 +26,7 @@
         </div>
 
         <div class="header" id="header">
-          <div class="title" id="title">포인트 게임 1단계</div>
+          <div class="title" id="titlePointGame">포인트 게임 1단계</div>
           <div class="step" id="step">1/3</div>
         </div>
         <div class="sub-header">
@@ -107,6 +107,7 @@
       from js import document, location, localStorage
       from pyodide import ffi
       from pyodide.http import pyfetch
+      import json
 
       queries = location.href.split('?')[1]
       no = queries[len('no=') : ]
@@ -131,7 +132,7 @@
         initView()
 
       def initView () :
-        title = document.getElementById('title')
+        title = document.getElementById('titlePointGame')
         stepDiv = document.getElementById('step')
         title.innerHTML = '포인트 게임 {}단계'.format(step + 1)
         stepDiv.innerHTML = '{}/3'.format(step + 1)
@@ -219,18 +220,20 @@
             doneAnswer(selectionNo)
             break
 
-      def onClickDialogDoneButton (args) :
+      async def doneLearning () :
+        global no
+        userid = localStorage.getItem('hp-user-id')
+        response = await pyfetch(url="http://127.0.0.1:5001/doneLearning", method="POST", body=json.dumps({ 'userid': userid, 'learningID': no }))
+        response_dict = await response.json()
+        location.href = '/views/Main/Main.html'
+
+      async def onClickDialogDoneButton (args) :
         global step, no
 
         if lastResult :
           step = step + 1
           if step >= 3 :
-            doneLectures = localStorage.getItem('doneLectures') or []
-            doneLectures = list(doneLectures)
-            if not no in doneLectures :
-              doneLectures.append(no)
-            localStorage.setItem('doneLectures', doneLectures)
-            location.href = '/views/Main/Main.html'
+            await doneLearning()
           else :
             initView()
         closeDialog()

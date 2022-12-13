@@ -74,6 +74,7 @@
 
       def doLogout (args) :
         localStorage.setItem('hp-user', None)
+        localStorage.setItem('hp-user-id', None)
         location.href = '/views/Login/Login.html'
 
       def goToMyPage (args) :
