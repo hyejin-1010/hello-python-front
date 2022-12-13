@@ -140,15 +140,20 @@
 
       def getInput () :
         input = {}
-        for itemKey in ['answer', 'content', 'description', 'hint', 'pointGameID', 'title', 'type'] :
+        for itemKey in ['answer', 'content', 'description', 'hint', 'pointGameID', 'title', 'type', 'earnPoint'] :
           input[itemKey] = Element('input_{}'.format(itemKey)).element.value
-
-          earnPoint = Element('input_earnPoint').element.value
+        earnPoint = Element('input_earnPoint').element.value
         if earnPoint != "" :
           input['earnPoint'] = int(earnPoint)
+        else :
+          input['earnPoint'] = 5
         selection = Element('input_selection').element.value
-        if selection != "" :
+        if selection :
           input['selection'] = ast.literal_eval(selection)
+
+        if input['type'] == 'selection' and 'answer' in input :
+          input['answer'] = int(input['answer'])
+
         return input
 
       async def onClickCreateBtn (args) :
@@ -228,7 +233,6 @@
 
       def showCreateView (args) :
         for itemKey in ['answer', 'content', 'description', 'hint', 'pointGameID', 'title', 'type', 'selection'] :
-          print(itemKey)
           Element('input_{}'.format(itemKey)).element.value = ''
 
         deleteItemBtn = document.getElementById('deleteItemBtn')
