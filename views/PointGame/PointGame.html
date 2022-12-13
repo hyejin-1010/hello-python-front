@@ -103,6 +103,8 @@
       </div>
     </div>
 
+    <py-script src="../../models.py"></py-script>
+    <py-script src="./PointGame.py"></py-script>
     <py-script>
       from js import document, location, localStorage
       from pyodide import ffi
@@ -110,109 +112,47 @@
       import json
 
       queries = location.href.split('?')[1]
-      no = queries[len('no=') : ]
+      learningID = queries[len('no=') : ]
 
       step = 0
       lastResult = False
 
       games = []
 
+      # Point Game Data를 가져오는 함수 
       async def getGameData () :
         global games
-        response = await pyfetch(url='http://127.0.0.1:5001/PointGames/{}'.format(no), method="GET")
+        response = await pyfetch(url='http://127.0.0.1:5001/PointGames/{}'.format(learningID), method="GET")
         response_dict = await response.json()
         data = response_dict['data']
 
         games = []
         for value in data.values() :
-          games.append(value)
+          games.append(PointGame(value))
 
       async def initialize () :
         await getGameData()
         initView()
 
-      def initView () :
-        title = document.getElementById('titlePointGame')
-        stepDiv = document.getElementById('step')
-        title.innerHTML = '포인트 게임 {}단계'.format(step + 1)
-        stepDiv.innerHTML = '{}/3'.format(step + 1)
-        pointDiv = document.getElementById('point')
-        game = games[step]
-        pointDiv.innerHTML = '{}포인트'.format(game['earnPoint'])
-        questionTitle = document.getElementById('questionTitle')
-        questionTitle.innerHTML = game['title']
-        questionContent = document.getElementById('questionContent')
-        if 'content' in game :
-          questionContent.style.display = 'block'
-          questionContent.innerHTML = game['content']
-        else :
-          questionContent.style.display = 'none'
-
-        inputAnswerBox = document.getElementById('inputAnswerBox')
-        selectionAnswerBox = document.getElementById('selectionAnswerBox')
-        oxAnswerBox = document.getElementById('oxAnswerBox')
-
-        if game['type'] == 'input' :
-          selectionAnswerBox.style.display = 'none'
-          oxAnswerBox.style.display = 'none'
-          inputAnswerBox.style.display = 'flex'
-        elif game['type'] == 'OX' :
-          selectionAnswerBox.style.display = 'none'
-          inputAnswerBox.style.display = 'none'
-          oxAnswerBox.style.display = 'flex'
-        else :
-          selectionAnswerBox.style.display = 'grid'
-          inputAnswerBox.style.display = 'none'
-          oxAnswerBox.style.display = 'none'
-
-          for i in range(len(game['selection'])) :
-            selection = game['selection'][i]
-            selectionEl = document.getElementById('selection{}Content'.format(i + 1))
-            selectionEl.innerHTML = selection
-
       def closeDialog () :
         dialog = document.getElementById('dialog')
         dialog.style.display = 'none'
 
-      def doneAnswer (answer) :
-        global step, games, lastResult
-        game = games[step]
-
-        dialog = document.getElementById('dialog') 
-        dialog.style.display = 'flex'
-
-        dialogContent = document.getElementById('dialogContent') 
-        hintBox = document.getElementById('hintBox') 
-        dialogContent.style.display = 'flex'
-        hintBox.style.display = 'none'
-
-        rightBox = document.getElementById('rightBox') 
-        wrongBox = document.getElementById('wrongBox') 
-        commentaryBox = document.getElementById('commentaryBox') 
-
-        lastResult = game['answer'] == answer
-        if lastResult :
-          rightBox.style.display = 'block'
-          wrongBox.style.display = 'none'
-          if 'description' in game :
-            commentaryBox.innerHTML = game['description']
-          commentaryBox.style.display = 'block'
-        else :
-          rightBox.style.display = 'none'
-          wrongBox.style.display = 'block'
-          commentaryBox.style.display = 'none'
-
+      # type: 'input' 답변 버튼 클릭 시 
       def doAnswer (args) :
         value = Element('inputAnswer').element.value  
         doneAnswer(value)
         Element('inputAnswer').element.value = ''
 
+      # O 버튼 클릭 시 
       def onClickOBtn (args) :
         doneAnswer('O')
 
+      # X 버튼 클릭 시 
       def onClickXBtn (args) :
         doneAnswer('X')
 
+      # Selection 클릭 시 
       def onClickSelection (args) :
         for i in range(len(args.path)) :
           if 'selection' in args.path[i].id :
@@ -220,15 +160,16 @@
             doneAnswer(selectionNo)
             break
 
+      # PointGame 종료 시 
       async def doneLearning () :
-        global no
+        global learningID
         userid = localStorage.getItem('hp-user-id')
-        response = await pyfetch(url="http://127.0.0.1:5001/doneLearning", method="POST", body=json.dumps({ 'userid': userid, 'learningID': no }))
+        response = await pyfetch(url="http://127.0.0.1:5001/doneLearning", method="POST", body=json.dumps({ 'userid': userid, 'learningID': learningID }))
         response_dict = await response.json()
         location.href = '/views/Main/Main.html'
 
       async def onClickDialogDoneButton (args) :
-        global step, no
+        global step
 
         if lastResult :
           step = step + 1
@@ -238,43 +179,33 @@
             initView()
         closeDialog()
 
+      '''
+      ================================================================
+      힌트 관련 함수
+      ================================================================
+      '''
+
+      # 힌트 버튼 클릭 시, 힌트 Dialog View 
       def onClickHintBtn (args) :
         global games, step
+        document.getElementById('dialog') .style.display = 'flex'
+        document.getElementById('dialogContent') .style.display = 'none'
+        document.getElementById('hintBox') .style.display = 'flex'
+        document.getElementById('hintContent') .innerHTML = games[step].hint
 
-        dialog = document.getElementById('dialog') 
-        dialog.style.display = 'flex'
-
-        dialogContent = document.getElementById('dialogContent') 
-        hintBox = document.getElementById('hintBox') 
-        dialogContent.style.display = 'none'
-        hintBox.style.display = 'flex'
-
-        hintContent = document.getElementById('hintContent') 
-        hintContent.innerHTML = games[step]['hint']
-
+      # 힌트 완료 버튼 클릭 시 - Dialog 를 닫는다. 
       def onClickHintDone (args) :
         closeDialog()
 
-      answerBtn = document.getElementById('answerBtn')
-      answerBtn.addEventListener('click', ffi.create_proxy(doAnswer))
-
       for i in range(4) :
-        selection = document.getElementById('selection{}'.format(i + 1))
-        selection.addEventListener('click', ffi.create_proxy(onClickSelection))
+        document.getElementById('selection{}'.format(i + 1)).addEventListener('click', ffi.create_proxy(onClickSelection))
 
-      doneResult = document.getElementById('doneResult')
-      doneResult.addEventListener('click', ffi.create_proxy(onClickDialogDoneButton))
-
-      hintBtn = document.getElementById('hintBtn')
-      hintBtn.addEventListener('click', ffi.create_proxy(onClickHintBtn))
-
-      doneHint = document.getElementById('doneHint')
-      doneHint.addEventListener('click', ffi.create_proxy(onClickHintDone))
-
-      oBtn = document.getElementById('oBtn')
-      oBtn.addEventListener('click', ffi.create_proxy(onClickOBtn))
-      xBtn = document.getElementById('xBtn')
-      xBtn.addEventListener('click', ffi.create_proxy(onClickXBtn))
+      document.getElementById('answerBtn').addEventListener('click', ffi.create_proxy(doAnswer))
+      document.getElementById('doneResult').addEventListener('click', ffi.create_proxy(onClickDialogDoneButton))
+      document.getElementById('hintBtn').addEventListener('click', ffi.create_proxy(onClickHintBtn))
+      document.getElementById('doneHint').addEventListener('click', ffi.create_proxy(onClickHintDone))
+      document.getElementById('oBtn').addEventListener('click', ffi.create_proxy(onClickOBtn))
+      document.getElementById('xBtn').addEventListener('click', ffi.create_proxy(onClickXBtn))
 
       initialize()
     </py-script>

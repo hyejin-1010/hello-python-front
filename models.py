@@ -37,3 +37,15 @@ class Learning () :
     lectureDiv.appendChild(lineDiv)
 
     return lectureDiv
+
+class PointGame () :
+  def __init__(self, data) : 
+    self.pointGameID = data['pointGameID']
+    self.title = data['title']                # 문제 타이틀 
+    self.content = data['content'] if 'content' in data else None # 문제 내용
+    self.type = data['type']                  # 문제 타입 ('input', 'selection', 'ox')
+    self.answer = data['answer']              # 문제 정답 
+    self.hint = data['hint']                  # 문제 힌트 
+    self.description = data['description']    # 문제 해설 
+    self.earnPoint = data['earnPoint']        # 문제 포인트 
+    self.selection = data['selection'] if 'selection' in data else []  # 문제 보기 List (type: 'selection')
