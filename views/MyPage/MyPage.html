@@ -2,21 +2,21 @@
   <head>
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
     <link rel="stylesheet" href="./MyPage.css" />
+    <link rel="stylesheet" href="../../styles/Navbar.css" />
     <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
+    <script src="http://code.jquery.com/jquery-1.6.4.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      $(function () {
+        $.get("../../components/Navbar/Navbar.html", function (data) {
+          $("#navbarBox").append(data);
+        });
+      });
+    </script>
   </head>
   <body>
     <header>
-        
-      <div class="navbar">
-        <div class="logo" id="logo">
-          <span>헬로파이썬</span>
-        </div>
-  
-        <div class="blank"></div>
-        <div class="btn" id="rankingBtn"><span>랭킹 확인하기</span></div> 
-        <div class="btn"><span>마이페이지</span></div> 
-      </div>
+      <div id="navbarBox"></div>
     </header>
 
     <div class="main">
@@ -26,12 +26,13 @@
           <img src="../../images/mypage_profile.svg" alt="">
         </div>
       
-        <div class="profile-user-name" style="margin-left:250px;margin-top:-130px;">Nickname</div>
+        <div class="profile-user-name" style="margin-left:250px;margin-top:-130px;"
+          id="nicknameDiv"></div>
         <button class="profile-edit-btn" style="margin-left:-290px;margin-top:-190px;">
           <img src="../../images/mypage_editbutton.svg" alt="" width="43px;" height="43px;">
         </button>
     
-        <div class="profile-point-status" style="margin-left:285px;margin-top:20px;">보유 포인트 : 5 point </div> 
+        <div class="profile-point-status" style="margin-left:285px;margin-top:20px;">보유 포인트 : <span id="pointSpan">5</span> point </div> 
         <div class="point-icon" style="margin-left:245px;margin-top:-35px;">
           <img src="../../images/mypage_point.svg" alt="">
         </div>
@@ -40,6 +41,26 @@
 
 
     <py-script>
+      from js import document, location, localStorage
+      from pyodide import ffi
+      from pyodide.http import pyfetch
+      import json
+
+      user = localStorage.getItem('hp-user')
+
+      def initialize () :
+        global user
+        if user and user != "undefined" :
+          user = json.loads(user)
+        else :  
+          return
+        
+        nicknameDiv = document.getElementById('nicknameDiv')
+        nicknameDiv.innerHTML = user['nickname']
+        pointSpan = document.getElementById('pointSpan')
+        pointSpan.innerHTML = '{}'.format(user['point'])
+
+      initialize()
     </py-script>
   </body>
 </html>
