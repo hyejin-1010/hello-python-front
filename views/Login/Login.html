@@ -37,7 +37,7 @@
       # 이미 로그인한 유저인지 체크
       def checkLoggedIn () :
         localUser = localStorage.getItem('hp-user')
-        if not localUser :
+        if not localUser and 'userid' not in localUser :
           location.href = '/views/Main/Main.html'
 
       # 로그인 버튼 클릭 시 호출되는 함수 

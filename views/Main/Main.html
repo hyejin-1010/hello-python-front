@@ -36,18 +36,21 @@
       # 데이터 가져오기
       async def getLearnings () :
         global learnings
-        response = await pyfetch(url='http://127.0.0.1:5001/learningDatas/{}'.format(1), method="GET")
-        response_dict = await response.json()
-        data = response_dict['data']
-        learningKeys = data.keys()
+        try :
+          response = await pyfetch(url='http://127.0.0.1:5001/learningDatas/{}'.format(1), method="GET")
+          response_dict = await response.json()
+          data = response_dict['data']
+          learningKeys = data.keys()
 
-        learnings = []
+          learnings = []
 
-        # TODO: 현재는 모든 Learning가 오기 때문에 프론트에서 Filtering 해준다.
-        for learningKey in learningKeys :
-          learning = data[learningKey]
-          if 'classID' in data[learningKey] and data[learningKey]['classID'] == '1' :
-            learnings.append(Learning(data[learningKey]))
+          # TODO: 현재는 모든 Learning가 오기 때문에 프론트에서 Filtering 해준다.
+          for learningKey in learningKeys :
+            learning = data[learningKey]
+            if 'classID' in data[learningKey] and data[learningKey]['classID'] == '1' :
+              learnings.append(Learning(data[learningKey]))
+        except Exception as e:
+          print(e)
 
       # Circle 클릭 시 
       def onClickCircle (args) :
