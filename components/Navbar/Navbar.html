@@ -28,8 +28,9 @@
         <div class="header" id="header">
           <div class="title" id="title">RANK</div>
         </div>
-       
-        <ul class="rank_wrap">
+
+        <ul class="rank_wrap" id="boxRanking">
+          <!--
           <li class="rank_item">
             <div class="rank_item_wrap">
               <span class="rank_number">1</span>
@@ -58,14 +59,17 @@
             </div>
             <span class="rank_point">25 point</span>
           </li>
+          -->
         </ul>
-        </div>
       </div>
     </div>
 
     <py-script>
       from pyodide import ffi
       from js import document, location
+
+      userid = None
+      rankingList = []
 
       # 랭킹 확인하기 버튼 클릭시 호출되는 함수
       async def ViewRanking(args):
@@ -80,13 +84,55 @@
       def goToMyPage (args) :
         location.href = '/views/MyPage/MyPage.html'
 
-      def showRankingDialog (args) :
+      def getRankingItemDiv (i, rankingItem) :
+        global userid
+        itemDiv = document.createElement('li')
+        itemDiv.className = 'rank_item'
+        itemDiv.innerHTML = ''
+
+        itemWrap = document.createElement('div')
+        itemWrap.className = 'rank_item_wrap'
+        rankNumber = document.createElement('span')
+        rankNumber.appendChild(document.createTextNode('{}'.format(i + 1)))
+        rankNumber.className = 'rank_number'
+        itemWrap.appendChild(rankNumber)
+        rankNickname = document.createElement('span')
+        nickname = rankingItem['nickname']
+        if 'userid' in rankingItem and rankingItem['userid'] == userid :
+          nickname = '{} (me)'.format(nickname)
+        rankNickname.appendChild(document.createTextNode(nickname))
+        rankNickname.className = 'rank_nickname'
+        itemWrap.appendChild(rankNickname)
+        itemDiv.appendChild(itemWrap)
+
+        rankPoint = document.createElement('span')
+        rankPoint.appendChild(document.createTextNode('{}'.format('{}'.format(rankingItem['point']))))
+        rankPoint.className = 'rank_point'
+        itemDiv.appendChild(rankPoint)
+        return itemDiv
+
+      async def showRankingDialog (args) :
+        global rankingList
+        response = await pyfetch(url="http://127.0.0.1:5001/Ranking", method="GET")
+        response_dict = await response.json()
+        rankingList = response_dict['data']
+
+        boxRanking = document.getElementById('boxRanking')
+
+        for i in range(len(rankingList)) :
+          rankingItem = rankingList[i]
+          boxRanking.append(getRankingItemDiv(i, rankingItem))
+
         dialog = document.getElementById('navbarDialog')
         dialog.style.display = 'flex'
       
       def closeNavbarDialog (args) : 
         dialog = document.getElementById('navbarDialog')
         dialog.style.display = 'none'
+
+      def initialize () :
+        global userid
+        userid = localStorage.getItem('hp-user-id')
 
       closeDialogBtn = document.getElementById('closeDialogBtn')
       closeDialogBtn.addEventListener('click', ffi.create_proxy(closeNavbarDialog))
@@ -99,6 +145,8 @@
 
       myPageBtn = document.getElementById('myPageBtn')
       myPageBtn.addEventListener('click', ffi.create_proxy(goToMyPage))
+
+      initialize()
     </py-script>
   </body>
 </html>

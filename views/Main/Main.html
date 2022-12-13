@@ -127,7 +127,6 @@
         await getUser()
         if 'completedLearnings' in localUser :
           doneLectures = list(localUser['completedLearnings'])
-        print(doneLectures)
         await getLectures()
         drawCircles()
 
